@@ -1,0 +1,43 @@
+{
+  "name": "codesahayak",
+  "version": "1.0.0",
+  "description": "India's first AI coding companion in mother tongue - Complete full-stack application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && node server.js",
+    "frontend": "cd web-ide && npx http-server . -p 5179",
+    "install-all": "npm install && cd backend && npm install",
+    "build": "cd backend && npm run build",
+    "start": "npm run backend",
+    "deploy": "node deploy.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "education",
+    "coding",
+    "indian-languages",
+    "ai-tutor",
+    "programming",
+    "multilingual",
+    "offline-first",
+    "edtech"
+  ],
+  "author": "Hood_Technoid - Arnav Raj & Tanishq Shukla",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hood-technoid/codesahayak"
+  },
+  "bugs": {
+    "url": "https://github.com/hood-technoid/codesahayak/issues"
+  },
+  "homepage": "https://codesahayak.in"
+}

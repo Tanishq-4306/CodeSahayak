@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSahayak - Redirecting...</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .redirect-container {
+            max-width: 400px;
+            padding: 2rem;
+        }
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: white;
+            color: #667eea;
+        }
+    </style>
+    <script>
+        // Auto-redirect to the new unified app
+        setTimeout(() => {
+            window.location.href = 'app.html';
+        }, 2000);
+    </script>
+</head>
+<body>
+    <div class="redirect-container">
+        <div class="logo">🤖</div>
+        <h1 class="title">CodeSahayak</h1>
+        <p>Redirecting to the enhanced unified app...</p>
+        <div class="spinner"></div>
+        <a href="app.html" class="btn">Continue to App</a>
+    </div>
+</body>
+</html>
+    <meta name="description" content="Learn coding in your mother tongue with AI assistance">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #4caf50;
+            --error: #f44336;
+            --warning: #ffc107;
+            --info: #2196f3;
+            --dark: #1a1a1a;
+            --light: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #eeeeee;
+            --gray-300: #e0e0e0;
+            --gray-400: #bdbdbd;
+            --gray-500: #9e9e9e;
+            --gray-600: #757575;
+            --gray-700: #616161;
+            --gray-800: #424242;
+            --gray-900: #212121;
+            --border-radius: 8px;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #404040;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .language-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.875rem;
+        }
+        
+        .lang-btn:hover,
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 8rem 0 4rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .hero-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+        
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Features Grid */
+        .features {
+            padding: 4rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-description {
+            color: var(--text-secondary);
+        }
+        
+        /* Demo Section */
+        .demo {
+            padding: 4rem 0;
+            background: var(--bg-secondary);
+        }
+        
+        .demo-container {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        
+        .demo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .demo-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .code-editor,
+        .output-console {
+            background: var(--dark);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            min-height: 300px;
+        }
+        
+        .editor-header,
+        .console-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .editor-title,
+        .console-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .code-textarea {
+            width: 100%;
+            height: 250px;
+            background: transparent;
+            border: none;
+            color: #a9b7c6;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            resize: none;
+            outline: none;
+        }
+        
+        .console-output {
+            color: #a9b7c6;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            min-height: 250px;
+        }
+        
+        .tutor-panel {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        
+        .tutor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .tutor-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tutor-content {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .tutor-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 6rem 0 3rem;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .language-selector {
+                flex-wrap: wrap;
+            }
+            
+            .lang-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.25rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-actions {
+                flex-direction: column;
+            }
+        }
+        
+        /* Loading and Success States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .success {
+            color: var(--success);
+        }
+        
+        .error {
+            color: var(--error);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="#" class="logo">
+                🤖 <span data-i18n="app_name">CodeSahayak</span>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#features" class="nav-link" data-i18n="nav_features">Features</a></li>
+                <li><a href="#demo" class="nav-link" data-i18n="nav_demo">Demo</a></li>
+                <li><a href="#about" class="nav-link" data-i18n="nav_about">About</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <div class="language-selector">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="hi">हिं</button>
+                    <button class="lang-btn" data-lang="ta">த</button>
+                    <button class="lang-btn" data-lang="bn">বা</button>
+                </div>
+                <a href="login.html" class="btn btn-outline" data-i18n="nav_login">Login</a>
+                <a href="signup.html" class="btn btn-primary" data-i18n="nav_signup">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title animate-fade-in-up" data-i18n="hero_title">India's First AI Coding Companion</h1>
+            <p class="hero-subtitle animate-fade-in-up" data-i18n="hero_subtitle">in Your Mother Tongue</p>
+            <p class="hero-description animate-fade-in-up" data-i18n="hero_description">
+                Learn to code without language barriers. Get personalized help from our AI Guruji in Hindi, Tamil, Bengali, and more.
+            </p>
+            <div class="hero-actions animate-fade-in-up">
+                <button class="btn btn-primary" id="tryDemoBtn" data-i18n="try_demo">✨ Try Demo</button>
+                <a href="signup.html" class="btn btn-outline" data-i18n="get_started">🚀 Get Started - It's Free</a>
+            </div>
+        </div>
+    </section>
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title" data-i18n="features_title">Our Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card animate-fade-in-up">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title" data-i18n="feature_multilingual">Multilingual Support</h3>
+                    <p class="feature-description" data-i18n="feature_multilingual_desc">Learn in 8+ Indian languages</p>
+                </div>
+                <div class="feature-card animate-fade-in-up">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title" data-i18n="feature_ai_tutor">AI Guruji Tutor</h3>
+                    <p class="feature-description" data-i18n="feature_ai_tutor_desc">Get hints in your language</p>
+                </div>
+                <div class="feature-card animate-fade-in-up">
+                    <div class="feature-icon">📚</div>
+                    <h3 class="feature-title" data-i18n="feature_curriculum">Curriculum Aligned</h3>
+                    <p class="feature-description" data-i18n="feature_curriculum_desc">NCERT & University syllabus</p>
+                </div>
+                <div class="feature-card animate-fade-in-up">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title" data-i18n="feature_progress">Progress Tracking</h3>
+                    <p class="feature-description" data-i18n="feature_progress_desc">Track your learning journey</p>
+                </div>
+                <div class="feature-card animate-fade-in-up">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title" data-i18n="feature_ethical">Ethical AI</h3>
+                    <p class="feature-description" data-i18n="feature_ethical_desc">Teaches concepts not code</p>
+                </div>
+                <div class="feature-card animate-fade-in-up">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title" data-i18n="feature_mobile">Mobile Friendly</h3>
+                    <p class="feature-description" data-i18n="feature_mobile_desc">Works on all phones</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <h2 class="section-title" data-i18n="demo_title">Try CodeSahayak IDE (Interactive Demo)</h2>
+            <div class="demo-container">
+                <div class="demo-header">
+                    <h3 class="demo-title">Live IDE Demo</h3>
+                    <div class="demo-actions">
+                        <select id="demoLanguage" class="lang-btn">
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                        </select>
+                        <select id="tutorLanguage" class="lang-btn">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="ta">தமிழ்</option>
+                            <option value="bn">বাংলা</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="demo-grid">
+                    <div class="code-editor">
+                        <div class="editor-header">
+                            <span class="editor-title" data-i18n="code_editor">Code Editor</span>
+                            <div class="demo-actions">
+                                <button class="btn btn-primary" id="runCodeBtn" data-i18n="run">▶️ Run</button>
+                                <button class="btn btn-outline" id="explainCodeBtn" data-i18n="explain">🧠 Explain</button>
+                            </div>
+                        </div>
+                        <textarea id="codeTextarea" class="code-textarea" placeholder="Write your code here...">def factorial(n):
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
+
+print(factorial(5))</textarea>
+                    </div>
+                    
+                    <div class="output-console">
+                        <div class="console-header">
+                            <span class="console-title" data-i18n="output_console">Output Console</span>
+                            <button class="btn btn-outline" id="clearConsoleBtn" data-i18n="clear">Clear</button>
+                        </div>
+                        <div id="consoleOutput" class="console-output">🚀 CodeSahayak IDE Ready!
+💡 Write code and click "Run" to see output
+✨ Click "Explain" for AI help in your language!</div>
+                    </div>
+                </div>
+                
+                <div class="tutor-panel">
+                    <div class="tutor-header">
+                        <h4 class="tutor-title">🤖 <span data-i18n="sahayak_tutor">Sahayak Tutor</span></h4>
+                        <div class="tutor-actions">
+                            <button class="btn btn-outline" id="getHintBtn" data-i18n="get_hint">💡 Get Hint</button>
+                            <button class="btn btn-outline" id="askQuestionBtn" data-i18n="ask_question">❓ Ask Question</button>
+                        </div>
+                    </div>
+                    <div id="tutorContent" class="tutor-content" data-i18n="write_code_tip">
+                        Write some code and click "Explain" to get help in your language!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: var(--bg-secondary); padding: 2rem 0; text-align: center; border-top: 1px solid var(--border);">
+        <div class="container">
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;" data-i18n="footer_text">Built with ❤️ for Indian Students</p>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;" data-i18n="developed_by">Developed by Hood_Technoid - Members Arnav Raj and Tanishq Shukla</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 CodeSahayak initializing...');
+            
+            // Initialize language manager
+            if (window.languageManager) {
+                await window.languageManager.loadTranslations();
+                window.languageManager.initLanguageSwitcher();
+                console.log('✅ Language system initialized');
+            }
+            
+            // Initialize demo functionality
+            initializeDemo();
+            
+            // Initialize animations
+            initializeAnimations();
+            
+            console.log('✅ CodeSahayak ready!');
+        });
+
+        function initializeDemo() {
+            const runBtn = document.getElementById('runCodeBtn');
+            const explainBtn = document.getElementById('explainCodeBtn');
+            const clearBtn = document.getElementById('clearConsoleBtn');
+            const hintBtn = document.getElementById('getHintBtn');
+            const codeTextarea = document.getElementById('codeTextarea');
+            const consoleOutput = document.getElementById('consoleOutput');
+            const tutorContent = document.getElementById('tutorContent');
+            const demoLanguage = document.getElementById('demoLanguage');
+            const tutorLanguage = document.getElementById('tutorLanguage');
+
+            // Run Code
+            runBtn?.addEventListener('click', function() {
+                const code = codeTextarea.value;
+                const language = demoLanguage.value;
+                
+                consoleOutput.textContent = '🚀 Running code...\n';
+                
+                setTimeout(() => {
+                    try {
+                        if (language === 'javascript') {
+                            const result = window.CodeExecutor.executeJavaScript(code);
+                            if (result.success) {
+                                consoleOutput.textContent += `✅ Output:\n${result.output || result.result || 'Code executed successfully'}`;
+                            } else {
+                                consoleOutput.textContent += `❌ Error: ${result.error}`;
+                            }
+                        } else if (language === 'python') {
+                            const result = window.CodeExecutor.mockPythonExecution(code);
+                            if (result.success) {
+                                consoleOutput.textContent += `✅ Output:\n${result.output}`;
+                            } else {
+                                consoleOutput.textContent += `❌ Error: ${result.error}`;
+                            }
+                        } else {
+                            consoleOutput.textContent += `✅ ${language} code would execute here\n💡 Full execution coming soon!`;
+                        }
+                    } catch (error) {
+                        consoleOutput.textContent += `❌ Error: ${error.message}`;
+                    }
+                }, 500);
+            });
+
+            // Explain Code
+            explainBtn?.addEventListener('click', async function() {
+                const code = codeTextarea.value;
+                const language = tutorLanguage.value;
+                
+                tutorContent.innerHTML = '<div class="loading">🧠 Sahayak is thinking...</div>';
+                
+                try {
+                    // Mock AI explanation
+                    setTimeout(() => {
+                        const explanations = {
+                            en: "This function calculates factorial by multiplying all numbers from 1 to n. The loop iterates through each number and multiplies it with the result.",
+                            hi: "यह फंक्शन फैक्टोरियल निकालता है। यह 1 से n तक सभी संख्याओं को गुणा करता है। लूप हर संख्या को रिजल्ट से गुणा करता है।",
+                            ta: "இந்த செயல்பாடு ஃபேக்டோரியலைக் கணக்கிடுகிறது. இது 1 முதல் n வரை அனைத்து எண்களையும் பெருக்குகிறது।",
+                            bn: "এই ফাংশনটি ফ্যাক্টোরিয়াল গণনা করে। এটি 1 থেকে n পর্যন্ত সমস্ত সংখ্যাকে গুণ করে।"
+                        };
+                        
+                        const explanation = explanations[language] || explanations.en;
+                        tutorContent.innerHTML = `
+                            <div class="explanation-box">
+                                <p><strong>💡 Explanation:</strong></p>
+                                <p>${explanation}</p>
+                                <p class="hint-text">💭 Try to understand the logic step by step!</p>
+                            </div>
+                        `;
+                    }, 800);
+                } catch (error) {
+                    tutorContent.innerHTML = `<p class="error">❌ Could not get explanation: ${error.message}</p>`;
+                }
+            });
+
+            // Get Hint
+            hintBtn?.addEventListener('click', function() {
+                const hints = {
+                    en: "💡 Hint: Think about what this code is trying to accomplish. What is the main goal?",
+                    hi: "💡 सुझाव: सोचिए कि यह कोड क्या करने की कोशिश कर रहा है। मुख्य लक्ष्य क्या है?",
+                    ta: "💡 குறிப்பு: இந்த குறியீடு என்ன செய்ய முயற்சிக்கிறது என்பதைப் பற்றி சிந்தியுங்கள்।",
+                    bn: "💡 ইঙ্গিত: ভাবুন এই কোডটি কী করার চেষ্টা করছে। মূল লক্ষ্য কী?"
+                };
+                
+                const language = tutorLanguage.value;
+                const hint = hints[language] || hints.en;
+                tutorContent.innerHTML = `<div class="hint-box">${hint}</div>`;
+            });
+
+            // Clear Console
+            clearBtn?.addEventListener('click', function() {
+                consoleOutput.textContent = '🚀 Console cleared\n💡 Ready for new output!';
+            });
+
+            // Try Demo Button
+            document.getElementById('tryDemoBtn')?.addEventListener('click', function() {
+                document.getElementById('demo').scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+
+        function initializeAnimations() {
+            // Intersection Observer for animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in-up');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            // Observe all feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        // Health check
+        async function checkBackendHealth() {
+            try {
+                const response = await fetch('http://localhost:3000/health');
+                const data = await response.json();
+                console.log('✅ Backend health:', data);
+                return true;
+            } catch (error) {
+                console.log('⚠️ Backend not available:', error.message);
+                return false;
+            }
+        }
+
+        // Check backend on load
+        checkBackendHealth();
+    </script>
+</body>
+</html>

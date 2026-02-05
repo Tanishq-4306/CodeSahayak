@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Noto+Sans+Telugu:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* CodeSahayak Design System */
+  --bg-primary: #F6F7FB;
+  --bg-secondary: #F0F4FA;
+  --bg-dark: #1A1D2B;
+  --accent-primary: #2E86AB;
+  --accent-secondary: #FF6B35;
+  --text-primary: #1A1D2B;
+  --text-secondary: #5A6078;
+  --text-light: #FFFFFF;
+  
+  /* Language Colors (subtle) */
+  --lang-hindi: #D94B5E;
+  --lang-tamil: #FF9A8B;
+  --lang-bengali: #A29BFE;
+  --lang-telugu: #F18F01;
+  --lang-marathi: #4ECDC4;
+  --lang-gujarati: #95E1D3;
+  --lang-kannada: #F38181;
+  --lang-malayalam: #AA96DA;
+  --lang-english: #6C7A89;
+  
+  /* Shadows */
+  --shadow-card: 0 10px 30px rgba(26, 29, 43, 0.08);
+  --shadow-cta: 0 4px 14px rgba(46, 134, 171, 0.18);
+  --shadow-hover: 0 14px 40px rgba(26, 29, 43, 0.12);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-[#F6F7FB] text-[#1A1D2B] antialiased;
+    font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Tamil', 'Noto Sans Bengali', 
+                 'Noto Sans Telugu', 'Noto Sans Gujarati', 'Noto Sans Kannada', 
+                 'Noto Sans Malayalam', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[#2E86AB] text-white px-6 py-3 rounded-xl font-semibold 
+           transition-all duration-300 hover:bg-[#257a9e] hover:-translate-y-0.5
+           hover:shadow-lg active:translate-y-0;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-[#1A1D2B] px-6 py-3 rounded-xl font-semibold 
+           border border-[#1A1D2B]/10 transition-all duration-300
+           hover:bg-[#F0F4FA] hover:-translate-y-0.5 hover:shadow-md;
+  }
+  
+  .btn-accent {
+    @apply bg-[#FF6B35] text-white px-6 py-3 rounded-xl font-semibold 
+           transition-all duration-300 hover:bg-[#e55a2b] hover:-translate-y-0.5
+           hover:shadow-lg;
+  }
+  
+  .card {
+    @apply bg-white rounded-[18px] p-6 shadow-[0_10px_30px_rgba(26,29,43,0.08)]
+           transition-all duration-300 hover:shadow-[0_14px_40px_rgba(26,29,43,0.12)]
+           hover:-translate-y-1;
+  }
+  
+  .card-dark {
+    @apply bg-[#1A1D2B] rounded-[18px] p-6 text-white;
+  }
+  
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-[#2E86AB] to-[#FF6B35] bg-clip-text text-transparent;
+  }
+  
+  .dot-pattern {
+    background-image: radial-gradient(circle, rgba(46, 134, 171, 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  
+  .language-badge {
+    @apply px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200
+           hover:scale-105 active:scale-95;
+  }
+  
+  .code-block {
+    @apply font-mono text-sm bg-[#1A1D2B] text-[#E2E8F0] p-4 rounded-xl overflow-x-auto;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-[#1A1D2B]/10 
+           bg-white text-[#1A1D2B] placeholder:text-[#5A6078]/60
+           focus:outline-none focus:ring-2 focus:ring-[#2E86AB]/30 focus:border-[#2E86AB]
+           transition-all duration-200;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F0F4FA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2E86AB;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #257a9e;
+}
+
+/* Selection */
+::selection {
+  background: rgba(46, 134, 171, 0.2);
+  color: #1A1D2B;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Language-specific font families */
+.lang-hi { font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; }
+.lang-ta { font-family: 'Noto Sans Tamil', 'Inter', sans-serif; }
+.lang-bn { font-family: 'Noto Sans Bengali', 'Inter', sans-serif; }
+.lang-te { font-family: 'Noto Sans Telugu', 'Inter', sans-serif; }
+.lang-mr { font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; }
+.lang-gu { font-family: 'Noto Sans Gujarati', 'Inter', sans-serif; }
+.lang-kn { font-family: 'Noto Sans Kannada', 'Inter', sans-serif; }
+.lang-ml { font-family: 'Noto Sans Malayalam', 'Inter', sans-serif; }
+.lang-en { font-family: 'Inter', sans-serif; }

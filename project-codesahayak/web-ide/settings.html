@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="settings">Settings - CodeSahayak</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #4caf50;
+            --error: #f44336;
+            --warning: #ffc107;
+            --info: #2196f3;
+            --dark: #1a1a1a;
+            --light: #ffffff;
+            --border-radius: 8px;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #404040;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border: #dee2e6;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .settings-section {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        
+        .settings-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--border-radius);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+        
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        
+        <h1 class="title" data-i18n="settings">Settings</h1>
+        
+        <div class="settings-section">
+            <h3 class="settings-title">
+                <span>👤</span>
+                <span data-i18n="account_settings">Account Settings</span>
+            </h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="full_name">Full Name</label>
+                    <input type="text" class="form-input" id="settingsName" placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="email">Email</label>
+                    <input type="email" class="form-input" id="settingsEmail" placeholder="Your email" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="settings-title">
+                <span>🌐</span>
+                <span data-i18n="language_region">Language & Region</span>
+            </h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="interface_language">Interface Language</label>
+                    <select class="form-select" id="interfaceLanguage">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="content_language">Content Language</label>
+                    <select class="form-select" id="contentLanguage">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="settings-title">
+                <span>💻</span>
+                <span data-i18n="ide_preferences">IDE Preferences</span>
+            </h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="theme">Theme</label>
+                    <select class="form-select" id="themeSelect">
+                        <option value="dark" data-i18n="dark_mode">Dark Mode</option>
+                        <option value="light" data-i18n="light_mode">Light Mode</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="font_size">Font Size</label>
+                    <select class="form-select" id="fontSize">
+                        <option value="12">12px</option>
+                        <option value="14" selected>14px</option>
+                        <option value="16">16px</option>
+                        <option value="18">18px</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="line_numbers">Line Numbers</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="lineNumbersToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="auto_indent">Auto Indent</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoIndentToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="saveSettingsBtn" data-i18n="save_changes">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (!window.requireAuth()) return;
+            
+            if (window.languageManager) {
+                await window.languageManager.loadTranslations();
+            }
+            
+            await loadUserData();
+            loadSettings();
+            initializeSettings();
+        });
+
+        async function loadUserData() {
+            try {
+                currentUser = await window.apiClient.getProfile();
+                
+                document.getElementById('settingsName').value = currentUser.name || '';
+                document.getElementById('settingsEmail').value = currentUser.email || '';
+                document.getElementById('interfaceLanguage').value = currentUser.language || 'en';
+                document.getElementById('contentLanguage').value = currentUser.language || 'en';
+                
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                window.toast.error('Failed to load user data');
+            }
+        }
+
+        function loadSettings() {
+            const settings = window.StorageManager.get('codesahayak_settings', {});
+            
+            if (settings.theme) {
+                document.getElementById('themeSelect').value = settings.theme;
+            }
+            
+            if (settings.fontSize) {
+                document.getElementById('fontSize').value = settings.fontSize;
+            }
+            
+            if (settings.showLineNumbers !== undefined) {
+                document.getElementById('lineNumbersToggle').checked = settings.showLineNumbers;
+            }
+            
+            if (settings.autoIndent !== undefined) {
+                document.getElementById('autoIndentToggle').checked = settings.autoIndent;
+            }
+        }
+
+        function initializeSettings() {
+            const saveBtn = document.getElementById('saveSettingsBtn');
+            const themeSelect = document.getElementById('themeSelect');
+            
+            // Theme change preview
+            themeSelect?.addEventListener('change', (e) => {
+                document.documentElement.setAttribute('data-theme', e.target.value);
+            });
+            
+            // Save settings
+            saveBtn?.addEventListener('click', async () => {
+                try {
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = 'Saving...';
+                    
+                    const settings = {
+                        theme: themeSelect.value,
+                        fontSize: document.getElementById('fontSize').value,
+                        showLineNumbers: document.getElementById('lineNumbersToggle').checked,
+                        autoIndent: document.getElementById('autoIndentToggle').checked,
+                        interfaceLanguage: document.getElementById('interfaceLanguage').value,
+                        contentLanguage: document.getElementById('contentLanguage').value
+                    };
+                    
+                    // Apply theme
+                    window.themeManager.setTheme(settings.theme);
+                    
+                    // Apply language
+                    if (window.languageManager) {
+                        window.languageManager.setLanguage(settings.interfaceLanguage);
+                    }
+                    
+                    // Save to localStorage
+                    window.StorageManager.set('codesahayak_settings', settings);
+                    
+                    window.toast.success('Settings saved successfully!');
+                    
+                } catch (error) {
+                    window.toast.error('Failed to save settings: ' + error.message);
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Changes';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

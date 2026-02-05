@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSahayak Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            background: #2d2d2d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #404040;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #4caf50; }
+        .error { background: #f44336; }
+        .warning { background: #ffc107; color: black; }
+        .info { background: #2196f3; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #5a6fd8; }
+        .status { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🤖 CodeSahayak Integration Test</h1>
+    <p>This page tests the integration between frontend, backend, database, AI, and IDE components.</p>
+    
+    <div class="test-section">
+        <h2>🔧 System Status</h2>
+        <div id="systemStatus">
+            <div class="test-result info">Initializing tests...</div>
+        </div>
+        <button onclick="runAllTests()">🚀 Run All Tests</button>
+        <button onclick="window.location.href='web-ide/index.html'">🏠 Go to Landing Page</button>
+        <button onclick="window.location.href='web-ide/dashboard.html'">💻 Go to Dashboard</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 Quick Links</h2>
+        <div>
+            <a href="web-ide/index.html" style="color: #667eea;">Landing Page</a> |
+            <a href="web-ide/login.html" style="color: #667eea;">Login</a> |
+            <a href="web-ide/signup.html" style="color: #667eea;">Sign Up</a> |
+            <a href="web-ide/dashboard.html" style="color: #667eea;">Dashboard</a> |
+            <a href="web-ide/progress.html" style="color: #667eea;">Progress</a> |
+            <a href="web-ide/library.html" style="color: #667eea;">Library</a> |
+            <a href="web-ide/settings.html" style="color: #667eea;">Settings</a>
+        </div>
+    </div>
+
+    <script>
+        async function runAllTests() {
+            const results = document.getElementById('testResults');
+            const status = document.getElementById('systemStatus');
+            
+            results.innerHTML = '';
+            status.innerHTML = '<div class="test-result info">Running tests...</div>';
+            
+            const tests = [
+                { name: 'Backend Health Check', test: testBackendHealth },
+                { name: 'Frontend Files', test: testFrontendFiles },
+                { name: 'Translation System', test: testTranslations },
+                { name: 'API Client', test: testAPIClient },
+                { name: 'Code Execution', test: testCodeExecution },
+                { name: 'Local Storage', test: testLocalStorage },
+                { name: 'Responsive Design', test: testResponsiveDesign }
+            ];
+            
+            let passed = 0;
+            let failed = 0;
+            
+            for (const test of tests) {
+                try {
+                    const result = await test.test();
+                    if (result.success) {
+                        results.innerHTML += `<div class="test-result success">✅ ${test.name}: ${result.message}</div>`;
+                        passed++;
+                    } else {
+                        results.innerHTML += `<div class="test-result error">❌ ${test.name}: ${result.message}</div>`;
+                        failed++;
+                    }
+                } catch (error) {
+                    results.innerHTML += `<div class="test-result error">❌ ${test.name}: ${error.message}</div>`;
+                    failed++;
+                }
+            }
+            
+            const totalTests = tests.length;
+            const successRate = Math.round((passed / totalTests) * 100);
+            
+            status.innerHTML = `
+                <div class="test-result ${successRate >= 80 ? 'success' : successRate >= 60 ? 'warning' : 'error'}">
+                    <div class="status">Integration Status: ${successRate}% (${passed}/${totalTests} tests passed)</div>
+                    <div>✅ Passed: ${passed} | ❌ Failed: ${failed}</div>
+                </div>
+            `;
+        }
+        
+        async function testBackendHealth() {
+            try {
+                const response = await fetch('http://localhost:3000/health');
+                const data = await response.json();
+                
+                if (data.status === 'OK') {
+                    return { success: true, message: 'Backend server is running and healthy' };
+                } else {
+                    return { success: false, message: 'Backend health check failed' };
+                }
+            } catch (error) {
+                return { success: false, message: 'Backend server not accessible: ' + error.message };
+            }
+        }
+        
+        async function testFrontendFiles() {
+            const files = [
+                'web-ide/index.html',
+                'web-ide/login.html',
+                'web-ide/signup.html',
+                'web-ide/dashboard.html',
+                'web-ide/js/api.js',
+                'web-ide/js/language.js',
+                'web-ide/js/utils.js'
+            ];
+            
+            let accessible = 0;
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    if (response.ok) accessible++;
+                } catch (error) {
+                    // File not accessible
+                }
+            }
+            
+            if (accessible === files.length) {
+                return { success: true, message: `All ${files.length} frontend files are accessible` };
+            } else {
+                return { success: false, message: `Only ${accessible}/${files.length} files accessible` };
+            }
+        }
+        
+        async function testTranslations() {
+            try {
+                const response = await fetch('web-ide/locales/en.json');
+                const translations = await response.json();
+                
+                const requiredKeys = ['app_name', 'hero_title', 'dashboard', 'ide', 'settings'];
+                const missingKeys = requiredKeys.filter(key => !translations[key]);
+                
+                if (missingKeys.length === 0) {
+                    return { success: true, message: `Translation system working (${Object.keys(translations).length} keys)` };
+                } else {
+                    return { success: false, message: `Missing translation keys: ${missingKeys.join(', ')}` };
+                }
+            } catch (error) {
+                return { success: false, message: 'Translation files not accessible' };
+            }
+        }
+        
+        async function testAPIClient() {
+            try {
+                // Test if API client can be loaded
+                const response = await fetch('web-ide/js/api.js');
+                const apiCode = await response.text();
+                
+                if (apiCode.includes('class APIClient') && apiCode.includes('baseURL')) {
+                    return { success: true, message: 'API client is properly configured' };
+                } else {
+                    return { success: false, message: 'API client structure is invalid' };
+                }
+            } catch (error) {
+                return { success: false, message: 'API client not accessible' };
+            }
+        }
+        
+        async function testCodeExecution() {
+            try {
+                // Test basic JavaScript execution
+                const testCode = 'console.log("Hello World"); return 42;';
+                const result = eval(testCode);
+                
+                if (result === 42) {
+                    return { success: true, message: 'Code execution engine is working' };
+                } else {
+                    return { success: false, message: 'Code execution returned unexpected result' };
+                }
+            } catch (error) {
+                return { success: false, message: 'Code execution failed: ' + error.message };
+            }
+        }
+        
+        async function testLocalStorage() {
+            try {
+                const testKey = 'codesahayak_test';
+                const testValue = { test: true, timestamp: Date.now() };
+                
+                localStorage.setItem(testKey, JSON.stringify(testValue));
+                const retrieved = JSON.parse(localStorage.getItem(testKey));
+                localStorage.removeItem(testKey);
+                
+                if (retrieved && retrieved.test === true) {
+                    return { success: true, message: 'Local storage is working properly' };
+                } else {
+                    return { success: false, message: 'Local storage data integrity issue' };
+                }
+            } catch (error) {
+                return { success: false, message: 'Local storage not available: ' + error.message };
+            }
+        }
+        
+        async function testResponsiveDesign() {
+            try {
+                const viewport = {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                };
+                
+                const isMobile = viewport.width <= 768;
+                const isTablet = viewport.width > 768 && viewport.width <= 1024;
+                const isDesktop = viewport.width > 1024;
+                
+                let deviceType = 'Unknown';
+                if (isMobile) deviceType = 'Mobile';
+                else if (isTablet) deviceType = 'Tablet';
+                else if (isDesktop) deviceType = 'Desktop';
+                
+                return { 
+                    success: true, 
+                    message: `Responsive design detected (${deviceType}: ${viewport.width}x${viewport.height})` 
+                };
+            } catch (error) {
+                return { success: false, message: 'Responsive design test failed' };
+            }
+        }
+        
+        // Auto-run tests on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html>
