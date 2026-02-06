@@ -338,14 +338,14 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
-                    { name: 'First Steps', desc: 'Complete your first lesson', icon: '🎯', unlocked: stats.stats.totalAttempts > 0 },
-                    { name: 'Streak Starter', desc: '3-day learning streak', icon: '🔥', unlocked: stats.user.streak >= 3 },
-                    { name: 'Streak Master', desc: '7-day learning streak', icon: '⚡', unlocked: stats.user.streak >= 7 },
-                    { name: 'Concept Master', desc: 'Master 5 concepts', icon: '🧠', unlocked: stats.stats.masteredConcepts >= 5 },
-                    { name: 'XP Hunter', desc: 'Earn 500 XP', icon: '💎', unlocked: user.xp >= 500 },
-                    { name: 'Level Up', desc: 'Reach level 5', icon: '🚀', unlocked: user.level >= 5 },
-                    { name: 'Pro Member', desc: 'Upgrade to Pro', icon: '👑', unlocked: user.isPro },
-                    { name: 'Helper', desc: 'Help a peer', icon: '🤝', unlocked: false },
+                    { name: 'First Steps', desc: 'Complete your first lesson', icon: 'target', unlocked: stats.stats.totalAttempts > 0 },
+                    { name: 'Streak Starter', desc: '3-day learning streak', icon: 'flame', unlocked: stats.user.streak >= 3 },
+                    { name: 'Streak Master', desc: '7-day learning streak', icon: 'zap', unlocked: stats.user.streak >= 7 },
+                    { name: 'Concept Master', desc: 'Master 5 concepts', icon: 'brain', unlocked: stats.stats.masteredConcepts >= 5 },
+                    { name: 'XP Hunter', desc: 'Earn 500 XP', icon: 'gem', unlocked: user.xp >= 500 },
+                    { name: 'Level Up', desc: 'Reach level 5', icon: 'rocket', unlocked: user.level >= 5 },
+                    { name: 'Pro Member', desc: 'Upgrade to Pro', icon: 'crown', unlocked: user.isPro },
+                    { name: 'Helper', desc: 'Help a peer', icon: 'handshake', unlocked: false },
                   ].map((achievement) => (
                     <div
                       key={achievement.name}

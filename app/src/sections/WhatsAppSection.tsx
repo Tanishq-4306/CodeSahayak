@@ -143,7 +143,7 @@ export function WhatsAppSection() {
                   <div className="flex justify-start">
                     <div className="bg-white rounded-lg rounded-tl-sm px-3 py-2 max-w-[85%] shadow-sm">
                       <p className="text-sm text-[#1A1D2B]">
-                        This loop runs 5 times (i = 0 to 4). Think of it like counting 5 cups of chai! 🍵
+                        This loop runs 5 times (i = 0 to 4). Think of it like counting 5 cups!
                       </p>
                       <span className="text-[10px] text-[#5A6078]">10:31 AM</span>
                     </div>

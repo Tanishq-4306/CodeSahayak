@@ -206,7 +206,7 @@ Welcome to your CodeSahayak project!
 - \`src/main.py\` - Main Python file
 - \`src/utils.py\` - Utility functions
 
-Happy Coding! 🚀`,
+Happy Coding!`,
         language: 'markdown',
         isFolder: false,
         parentId: 'root',
@@ -249,7 +249,7 @@ export const useIDEStore = create<IDEState>()(
         {
           id: 'welcome',
           role: 'assistant',
-          content: '👋 Welcome to CodeSahayak IDE!\n\nI\'m your AI coding assistant. I can help you with:\n\n• Explaining code concepts\n• Debugging errors\n• Writing better code\n• Answering programming questions\n\nJust type your question or select code and ask!',
+          content: 'Welcome to CodeSahayak IDE!\n\nI\'m your AI coding assistant. I can help you with:\n\n• Explaining code concepts\n• Debugging errors\n• Writing better code\n• Answering programming questions\n\nJust type your question or select code and ask!',
           timestamp: new Date(),
         },
       ],

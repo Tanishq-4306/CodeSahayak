@@ -85,19 +85,19 @@ export function FeaturesSection() {
     <section
       ref={sectionRef}
       id="features"
-      className="relative py-20 lg:py-28 bg-[#F0F4FA]"
+      className="relative py-12 sm:py-16 lg:py-20 xl:py-28 bg-[#F0F4FA]"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2
           ref={headingRef}
-          className="text-3xl sm:text-4xl font-bold text-[#1A1D2B] text-center mb-12 lg:mb-16"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1A1D2B] text-center mb-8 sm:mb-12 lg:mb-16"
         >
           {t('featuresTitle')}
         </h2>
 
         <div
           ref={cardsRef}
-          className="grid md:grid-cols-3 gap-6 lg:gap-8"
+          className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
         >
           {features.map((feature, index) => (
             <div
@@ -105,24 +105,24 @@ export function FeaturesSection() {
               className="card group cursor-pointer"
             >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110"
+                className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-4 sm:mb-5 transition-transform group-hover:scale-110"
                 style={{ backgroundColor: `${feature.color}15` }}
               >
                 <feature.icon
-                  className="w-6 h-6"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
                   style={{ color: feature.color }}
                 />
               </div>
 
-              <h3 className="text-xl font-bold text-[#1A1D2B] mb-3">
+              <h3 className="text-lg sm:text-xl font-bold text-[#1A1D2B] mb-2 sm:mb-3">
                 {feature.title}
               </h3>
 
-              <p className="text-[#5A6078] mb-5 leading-relaxed">
+              <p className="text-sm sm:text-base text-[#5A6078] mb-4 sm:mb-5 leading-relaxed">
                 {feature.description}
               </p>
 
-              <button className="flex items-center gap-2 text-[#2E86AB] font-medium group/btn">
+              <button className="flex items-center gap-2 text-[#2E86AB] font-medium text-sm sm:text-base group/btn touch-manipulation">
                 <span>Learn more</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
               </button>

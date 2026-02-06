@@ -118,7 +118,7 @@ export function AIAssistant() {
       },
       hint: {
         user: 'Give me a hint about this code',
-        assistant: "💡 **Hint**: Think about what happens when you call factorial(0). Does your base case handle it correctly?",
+        assistant: "**Hint**: Think about what happens when you call factorial(0). Does your base case handle it correctly?",
       },
       improve: {
         user: 'How can I improve this code?',

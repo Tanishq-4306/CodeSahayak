@@ -186,14 +186,14 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex items-center">
+      <div className="relative z-10 h-full flex items-center py-20 sm:py-0">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
             {/* Left: Text Content */}
             <div className="max-w-xl">
               <h1
                 ref={headlineRef}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1A1D2B] leading-tight mb-6"
+                className="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A1D2B] leading-tight mb-4 sm:mb-6"
               >
                 {headlineWords.map((word, i) => (
                   <span key={i} className="word inline-block mr-[0.3em]">
@@ -204,14 +204,14 @@ export function HeroSection() {
 
               <p
                 ref={subtitleRef}
-                className="text-lg sm:text-xl text-[#5A6078] mb-8"
+                className="text-base sm:text-lg md:text-xl text-[#5A6078] mb-6 sm:mb-8"
                 style={{ opacity: 0 }}
               >
                 {t('heroSubtitle')}
               </p>
 
-              <div ref={ctaRef} className="flex flex-wrap gap-4" style={{ opacity: 0 }}>
-                <button onClick={handleStartLearning} className="btn-primary flex items-center gap-2">
+              <div ref={ctaRef} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4" style={{ opacity: 0 }}>
+                <button onClick={handleStartLearning} className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto">
                   {t('startLearning')}
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -220,7 +220,7 @@ export function HeroSection() {
                     const el = document.getElementById('teachers');
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="btn-secondary flex items-center gap-2"
+                  className="btn-secondary flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                   <GraduationCap className="w-4 h-4" />
                   {t('imTeacher')}
@@ -231,25 +231,25 @@ export function HeroSection() {
             {/* Right: Language Selector Panel */}
             <div
               ref={panelRef}
-              className="bg-white/90 backdrop-blur-md rounded-2xl p-6 shadow-xl"
+              className="bg-white/90 backdrop-blur-md rounded-2xl p-4 sm:p-6 shadow-xl"
               style={{ opacity: 0 }}
             >
-              <h3 className="text-lg font-semibold text-[#1A1D2B] mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#1A1D2B] mb-3 sm:mb-4">
                 {t('selectLanguage')}
               </h3>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {Object.values(languages).map((lang) => (
                   <button
                     key={lang.code}
                     onClick={() => handleLanguageSelect(lang.code as LanguageCode)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-all duration-200 hover:scale-105 ${
+                    className={`flex flex-col items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 touch-manipulation ${
                       currentLanguage === lang.code
                         ? 'bg-[#2E86AB] text-white shadow-lg'
                         : 'bg-[#F6F7FB] hover:bg-[#F0F4FA] text-[#1A1D2B]'
                     }`}
                   >
-                    <span className="text-2xl">{lang.flag}</span>
-                    <span className="text-sm font-medium">{lang.nativeName}</span>
+                    <span className="text-xl sm:text-2xl">{lang.flag}</span>
+                    <span className="text-xs sm:text-sm font-medium text-center leading-tight">{lang.nativeName}</span>
                   </button>
                 ))}
               </div>
@@ -261,7 +261,7 @@ export function HeroSection() {
       {/* Bottom Tagline */}
       <p
         ref={taglineRef}
-        className="absolute bottom-8 left-4 sm:left-8 text-sm text-[#5A6078]"
+        className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 text-xs sm:text-sm text-[#5A6078]"
         style={{ opacity: 0 }}
       >
         {t('builtFor')}

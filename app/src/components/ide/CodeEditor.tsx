@@ -7,6 +7,7 @@ import { cpp } from '@codemirror/lang-cpp';
 import { sql } from '@codemirror/lang-sql';
 import { html } from '@codemirror/lang-html';
 import { oneDark } from '@codemirror/theme-one-dark';
+import { Code } from 'lucide-react';
 import { useIDEStore } from '@/store/ideStore';
 import { getLanguageFromFilename } from '@/lib/fileIcons';
 
@@ -72,7 +73,7 @@ export function CodeEditor() {
       <div className="flex-1 flex items-center justify-center bg-[#1E1E2E]">
         <div className="text-center">
           <div className="w-20 h-20 bg-[#2D2D3A] rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-4xl">👋</span>
+            <Code className="w-10 h-10 text-[#2E86AB]" />
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">
             Welcome to CodeSahayak IDE

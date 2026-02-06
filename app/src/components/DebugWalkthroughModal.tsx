@@ -121,7 +121,7 @@ print(calculate_average(nums))`}</pre>
                 </p>
                 <div className="bg-[#2E86AB]/10 rounded-lg p-4">
                   <p className="text-sm text-[#2E86AB] font-medium">
-                    💡 Tip: Python lists are 0-indexed. The last valid index is <code>len(numbers) - 1</code>.
+                    <strong>Tip:</strong> Python lists are 0-indexed. The last valid index is <code>len(numbers) - 1</code>.
                   </p>
                 </div>
               </div>

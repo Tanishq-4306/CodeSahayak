@@ -130,7 +130,7 @@ export default function EditorPage() {
       const hintMessage: Message = {
         id: Date.now().toString(),
         type: 'ai',
-        content: `💡 Hint ${newHint.level}: ${newHint.content}`,
+        content: `Hint ${newHint.level}: ${newHint.content}`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, hintMessage]);
@@ -154,7 +154,7 @@ export default function EditorPage() {
       const explainMessage: Message = {
         id: Date.now().toString(),
         type: 'ai',
-        content: `📚 ${response.explanation}`,
+        content: `${response.explanation}`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, explainMessage]);
@@ -179,7 +179,7 @@ export default function EditorPage() {
       const debugMessage: Message = {
         id: Date.now().toString(),
         type: 'ai',
-        content: `🔧 ${response.title}: ${response.explanation}`,
+        content: `${response.title}: ${response.explanation}`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, debugMessage]);
@@ -210,7 +210,7 @@ export default function EditorPage() {
       const debugMessage: Message = {
         id: Date.now().toString(),
         type: 'ai',
-        content: `🔧 ${response.title}: ${response.explanation}`,
+        content: `${response.title}: ${response.explanation}`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, debugMessage]);

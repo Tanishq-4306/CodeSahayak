@@ -49,23 +49,23 @@ export function OnboardingModal() {
 
   return (
     <Dialog open={isOnboardingOpen} onOpenChange={closeOnboarding}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-[#1A1D2B] flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2E86AB] to-[#FF6B35] flex items-center justify-center">
-              <Globe className="w-5 h-5 text-white" />
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-[#1A1D2B] flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#2E86AB] to-[#FF6B35] flex items-center justify-center">
+              <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            {t('onboardingTitle')}
+            <span className="text-base sm:text-2xl">{t('onboardingTitle')}</span>
           </DialogTitle>
         </DialogHeader>
         
         <div className="mt-4">
-          <p className="text-[#5A6078] mb-6">{t('onboardingSubtitle')}</p>
+          <p className="text-sm sm:text-base text-[#5A6078] mb-4 sm:mb-6">{t('onboardingSubtitle')}</p>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
             {/* Language Selection */}
             <div>
-              <h3 className="font-semibold text-[#1A1D2B] mb-4 flex items-center gap-2">
+              <h3 className="font-semibold text-sm sm:text-base text-[#1A1D2B] mb-3 sm:mb-4 flex items-center gap-2">
                 <Globe className="w-4 h-4 text-[#2E86AB]" />
                 {t('selectLanguage')}
               </h3>
@@ -74,16 +74,16 @@ export function OnboardingModal() {
                   <button
                     key={lang.code}
                     onClick={() => setLanguage(lang.code as LanguageCode)}
-                    className={`flex items-center gap-2 p-3 rounded-xl transition-all text-left ${
+                    className={`flex items-center gap-2 p-2 sm:p-3 rounded-xl transition-all text-left touch-manipulation ${
                       currentLanguage === lang.code
                         ? 'bg-[#2E86AB]/10 ring-2 ring-[#2E86AB]'
                         : 'bg-[#F6F7FB] hover:bg-[#F0F4FA]'
                     }`}
                   >
-                    <span className="text-xl">{lang.flag}</span>
+                    <span className="text-lg sm:text-xl">{lang.flag}</span>
                     <div>
-                      <p className="font-medium text-[#1A1D2B] text-sm">{lang.nativeName}</p>
-                      <p className="text-xs text-[#5A6078]">{lang.name}</p>
+                      <p className="font-medium text-[#1A1D2B] text-xs sm:text-sm">{lang.nativeName}</p>
+                      <p className="text-[10px] sm:text-xs text-[#5A6078]">{lang.name}</p>
                     </div>
                   </button>
                 ))}
@@ -92,7 +92,7 @@ export function OnboardingModal() {
             
             {/* Offline Mode */}
             <div>
-              <h3 className="font-semibold text-[#1A1D2B] mb-4 flex items-center gap-2">
+              <h3 className="font-semibold text-sm sm:text-base text-[#1A1D2B] mb-3 sm:mb-4 flex items-center gap-2">
                 {isOfflineMode ? (
                   <WifiOff className="w-4 h-4 text-[#FF6B35]" />
                 ) : (
@@ -101,29 +101,29 @@ export function OnboardingModal() {
                 {t('enableOffline')}
               </h3>
               
-              <div className="bg-[#F6F7FB] rounded-xl p-4">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-[#F6F7FB] rounded-xl p-3 sm:p-4">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
                   <div>
-                    <p className="font-medium text-[#1A1D2B]">{t('downloadSize')}</p>
-                    <p className="text-sm text-[#5A6078]">{t('problemsAvailable')}</p>
+                    <p className="font-medium text-sm sm:text-base text-[#1A1D2B]">{t('downloadSize')}</p>
+                    <p className="text-xs sm:text-sm text-[#5A6078]">{t('problemsAvailable')}</p>
                   </div>
                   <button
                     onClick={() => handleOfflineToggle(!isOfflineMode)}
-                    className={`relative w-14 h-8 rounded-full transition-colors ${
+                    className={`relative w-12 h-7 sm:w-14 sm:h-8 rounded-full transition-colors touch-manipulation ${
                       isOfflineMode ? 'bg-[#2E86AB]' : 'bg-[#5A6078]/30'
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-6 h-6 rounded-full bg-white transition-transform ${
-                        isOfflineMode ? 'translate-x-7' : 'translate-x-1'
+                      className={`absolute top-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white transition-transform ${
+                        isOfflineMode ? 'translate-x-6 sm:translate-x-7' : 'translate-x-1'
                       }`}
                     />
                   </button>
                 </div>
                 
                 {isOfflineMode && (
-                  <div className="mt-4">
-                    <div className="flex items-center justify-between text-sm mb-2">
+                  <div className="mt-3 sm:mt-4">
+                    <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
                       <span className="text-[#5A6078]">
                         {isDownloading ? 'Downloading...' : 'Ready!'}
                       </span>
@@ -138,8 +138,8 @@ export function OnboardingModal() {
                       />
                     </div>
                     {downloadProgress >= 100 && (
-                      <div className="flex items-center gap-2 mt-2 text-green-600 text-sm">
-                        <Check className="w-4 h-4" />
+                      <div className="flex items-center gap-2 mt-2 text-green-600 text-xs sm:text-sm">
+                        <Check className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span>Download complete!</span>
                       </div>
                     )}
@@ -150,10 +150,10 @@ export function OnboardingModal() {
           </div>
           
           {/* Action Buttons */}
-          <div className="flex gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
             <button
               onClick={closeOnboarding}
-              className="btn-secondary"
+              className="btn-secondary w-full sm:w-auto"
             >
               {t('back')}
             </button>

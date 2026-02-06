@@ -143,7 +143,7 @@ export function DebugModalSection() {
           {/* Tip */}
           <div className="bg-[#2E86AB]/5 rounded-xl p-4 mb-6">
             <p className="text-sm text-[#2E86AB]">
-              💡 <strong>Tip:</strong> Python lists are 0-indexed. The last valid index is{' '}
+              <strong>Tip:</strong> Python lists are 0-indexed. The last valid index is{' '}
               <code>len(numbers) - 1</code>. When your loop runs with{' '}
               <code>range(len(numbers))</code>, the last value of <code>i</code> is actually valid—
               but the error occurs when the list is empty!

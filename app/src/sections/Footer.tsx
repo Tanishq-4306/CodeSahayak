@@ -164,10 +164,18 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/40 text-sm">
-            © {new Date().getFullYear()} CodeSahayak. Made with ❤️ for Indian students.
-          </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="text-center sm:text-left">
+            <p className="text-white/40 text-sm mb-2">
+              © {new Date().getFullYear()} CodeSahayak. Built for Indian students.
+            </p>
+            <p className="text-white/60 text-sm font-medium">
+              Developed by <span className="text-[#2E86AB]">Hood_Technoid</span>
+            </p>
+            <p className="text-white/40 text-xs mt-1">
+              Arnav Raj • Ankit Kumar • Tanishq Shukla
+            </p>
+          </div>
           <div className="flex items-center gap-4">
             {socialLinks.map((social, index) => (
               <a

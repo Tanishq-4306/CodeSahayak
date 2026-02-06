@@ -130,7 +130,7 @@ export function ProgressSection() {
                 </div>
               </div>
               <span className="px-3 py-1 bg-[#FF6B35]/10 text-[#FF6B35] text-sm font-medium rounded-full">
-                🔥 Keep it up!
+                Keep it up!
               </span>
             </div>
 
