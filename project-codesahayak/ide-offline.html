@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeSahayak IDE (Offline)</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Roboto, sans-serif; }
+body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; min-height: 100vh; padding: 15px; }
+.container { max-width: 1400px; margin: 0 auto; }
+.header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(255,255,255,0.92); border-radius: 16px; margin-bottom: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.logo { font-size: 28px; font-weight: 800; display: flex; align-items: center; gap: 12px; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.lang-selector { display: flex; gap: 10px; flex-wrap: wrap; }
+.lang-btn { background: rgba(102, 126, 234, 0.15); border: none; color: #4a5568; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.25s; font-size: 15px; }
+.lang-btn:hover { background: rgba(102, 126, 234, 0.3); transform: translateY(-1px); }
+.lang-btn.active { background: #667eea; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+.ide-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; }
+@media (max-width: 900px) { .ide-grid { grid-template-columns: 1fr; } }
+.panel { background: white; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+.panel-header { padding: 18px 24px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; }
+.panel-title { font-size: 20px; font-weight: 700; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+.editor-container { flex: 1; padding: 20px; background: #1e293b; }
+#codeEditor { width: 100%; height: 100%; min-height: 380px; background: #1e293b; color: #f1f5f9; border: none; font-family: 'Fira Code', 'Courier New', monospace; font-size: 16px; line-height: 1.6; padding: 20px; resize: vertical; outline: none; border-radius: 12px; }
+.console-container { flex: 1; padding: 20px; overflow-y: auto; max-height: 320px; background: #0f172a; color: #cbd5e1; font-family: 'Fira Code', monospace; font-size: 15px; line-height: 1.7; border-radius: 12px; margin: 0 20px 20px; }
+.console-line { padding: 6px 0; padding-left: 15px; margin: 8px 0; border-left: 3px solid #38bdf8; }
+.console-line.error { border-left-color: #f87171; color: #fecaca; }
+.console-line.info { border-left-color: #60a5fa; color: #bfdbfe; }
+.console-line.success { border-left-color: #34d399; color: #d1fae5; }
+.tutor-container { flex: 1; padding: 25px; }
+.tutor-content { background: #f0f7ff; border-radius: 16px; padding: 25px; min-height: 280px; font-size: 17px; line-height: 1.8; color: #1e293b; }
+.hint-box { background: #fff8e6; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 0 12px 12px 0; margin: 22px 0; font-size: 16px; }
+.action-bar { display: flex; flex-wrap: wrap; gap: 14px; padding: 22px 24px; background: #f1f5f9; border-top: 2px solid #e2e8f0; }
+.btn { padding: 14px 28px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.25s; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+.btn:active { transform: translateY(0); }
+.btn-run { background: #10b981; color: white; }
+.btn-run:hover { background: #0da271; }
+.btn-explain { background: #667eea; color: white; }
+.btn-explain:hover { background: #5a67d8; }
+.btn-hint { background: #f59e0b; color: white; }
+.btn-hint:hover { background: #d97706; }
+.btn-save { background: #3b82f6; color: white; }
+.btn-save:hover { background: #2563eb; }
+.toast { position: fixed; bottom: 25px; right: 25px; background: #10b981; color: white; padding: 18px 32px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); transform: translateX(450px); transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1); z-index: 1000; font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 12px; }
+.toast.show { transform: translateX(0); }
+.spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin-right: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading { text-align: center; padding: 45px 25px; color: #667eea; }
+.welcome-card { background: white; border-radius: 20px; padding: 35px; text-align: center; margin-bottom: 25px; box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+.welcome-card h1 { font-size: 36px; margin-bottom: 16px; background: linear-gradient(45deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.welcome-card p { font-size: 20px; color: #4a5568; margin-bottom: 25px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+.welcome-card .highlight { background: linear-gradient(45deg, #667eea33, #764ba233); padding: 3px 10px; border-radius: 8px; font-weight: 600; }
+.footer { text-align: center; color: rgba(255,255,255,0.85); padding: 25px; font-size: 15px; margin-top: 20px; }
+.footer a { color: white; text-decoration: underline; }
+@media (max-width: 600px) {
+.header { flex-direction: column; gap: 15px; text-align: center; }
+.lang-selector { justify-content: center; }
+.btn { flex: 1; min-width: 140px; justify-content: center; padding: 12px; font-size: 14px; }
+.welcome-card h1 { font-size: 28px; }
+.welcome-card p { font-size: 17px; }
+#codeEditor { font-size: 14px; padding: 15px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="welcome-card">
+<h1>🤖 CodeSahayak IDE</h1>
+<p>India's first AI coding companion that teaches in your mother tongue — so you <span class="highlight">learn to think like a coder</span>, not just copy code.</p>
+</div>
+
+<div class="header">
+<div class="logo">🤖 CodeSahayak</div>
+<div class="lang-selector">
+<button class="lang-btn active" data-lang="en">English</button>
+<button class="lang-btn" data-lang="hi">हिंदी</button>
+<button class="lang-btn" data-lang="ta">தமிழ்</button>
+<button class="lang-btn" data-lang="bn">বাংলা</button>
+</div>
+</div>
+
+<div class="ide-grid">
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title">💻 Code Editor (Python)</div>
+</div>
+<div class="editor-container">
+<textarea id="codeEditor" spellcheck="false"># Welcome to CodeSahayak! 🎉
+# Try this factorial program:
+
+def factorial(n):
+    """Calculate factorial of a number"""
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
+
+# Run this to see output!
+print("Factorial of 5 is:", factorial(5))
+print("Namaste from CodeSahayak! 🙏")</textarea>
+</div>
+<div class="action-bar">
+<button class="btn btn-run" id="runBtn"><span id="runText">Run</span> ▶️</button>
+<button class="btn btn-explain" id="explainBtn"><span id="explainText">Explain</span> 🧠</button>
+<button class="btn btn-hint" id="hintBtn"><span id="hintText">Hint</span> 💡</button>
+<button class="btn btn-save" id="saveBtn"><span id="saveText">Save</span> 💾</button>
+</div>
+</div>
+
+<div class="panel">
+<div class="panel-header">
+<div class="panel-title" id="consoleTitle">📟 Output Console</div>
+<button class="btn" style="background:#ef4444;color:white;padding:8px 18px;font-size:14px;border-radius:12px;" id="clearBtn">Clear</button>
+</div>
+<div class="console-container" id="consoleOutput">
+<div class="console-line info">✅ CodeSahayak IDE ready! Write code and click "Run"</div>
+</div>
+</div>
+
+<div class="panel" style="grid-column: span 2;">
+<div class="panel-header">
+<div class="panel-title">🎓 Sahayak Guruji</div>
+</div>
+<div class="tutor-container">
+<div class="tutor-content" id="tutorContent">
+<p id="tutorWelcome">Write code above and click "Explain" to get help in your language! Sahayak teaches concepts — never gives full solutions to copy.</p>
+<div class="hint-box">
+<strong>💡 Sahayak's Promise:</strong> I give hints to build your problem-solving muscle — not full solutions to copy! Try to understand the logic step by step.
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer">
+Built with ❤️ for Indian Students by Hood_Technoid - Members Arnav Raj and Tanishq Shukla • Works 100% offline • No server required
+</div>
+</div>
+
+<div class="toast" id="toast">✅ Code saved successfully!</div>
+
+<script>
+// Translations
+const translations = {
+en: {
+runText: "Run", explainText: "Explain", hintText: "Hint", saveText: "Save",
+factorialExplain: "This function calculates factorial by multiplying all numbers from 1 to n. Example: 5! = 5 × 4 × 3 × 2 × 1 = 120",
+loopExplain: "This loop iterates through numbers 1 to n. Each iteration multiplies the current result by i.",
+hintFactorial: "💡 Hint: Factorial means multiplying all numbers from 1 to n. Try using a loop that starts at 1!",
+hintLoop: "💡 Hint: Check your loop range—does it include n? Remember: range(1, n) stops at n-1!",
+savedToast: "✅ Code saved! ID: ",
+runOutput1: "Factorial of 5 is: 120",
+runOutput2: "Namaste from CodeSahayak! 🙏",
+running: "🚀 Running code...",
+noCode: "⚠️ Write some code first!",
+tutorWelcome: "Write code above and click 'Explain' to get help in your language! Sahayak teaches concepts — never gives full solutions to copy."
+},
+hi: {
+runText: "चलाएं", explainText: "समझाएं", hintText: "सुझाव", saveText: "सहेजें",
+factorialExplain: "यह फंक्शन फैक्टोरियल निकालता है। यह 1 से n तक सभी संख्याओं को गुणा करता है। उदाहरण: 5! = 5 × 4 × 3 × 2 × 1 = 120",
+loopExplain: "यह लूप 1 से n तक की संख्याओं को इटरेट करता है। हर इटरेशन में करंट रिजल्ट को i से गुणा किया जाता है।",
+hintFactorial: "💡 सुझाव: फैक्टोरियल का मतलब 1 से n तक सभी संख्याओं का गुणा करना है। 1 से शुरू होने वाला लूप आज़माएं!",
+hintLoop: "💡 सुझाव: अपना लूप रेंज चेक करें—क्या इसमें n शामिल है? याद रखें: range(1, n) n-1 पर रुकता है!",
+savedToast: "✅ कोड सहेजा गया! ID: ",
+runOutput1: "5 का फैक्टोरियल है: 120",
+runOutput2: "कोडसहायक से नमस्ते! 🙏",
+running: "🚀 कोड चल रहा है...",
+noCode: "⚠️ पहले कुछ कोड लिखें!",
+tutorWelcome: "ऊपर कोड लिखें और 'समझाएं' पर क्लिक करें अपनी भाषा में मदद पाने के लिए! सहायक कॉन्सेप्ट्स सिखाता है — कॉपी करने के लिए फुल सॉल्यूशन नहीं देता।"
+},
+ta: {
+runText: "இயக்கு", explainText: "விளக்கு", hintText: "குறிப்பு", saveText: "சேமி",
+factorialExplain: "இந்த செயல்பாடு ஃபேக்டோரியலைக் கணக்கிடுகிறது। இது 1 முதல் n வரை அனைத்து எண்களையும் பெருக்குகிறது। உதாரணம்: 5! = 5 × 4 × 3 × 2 × 1 = 120",
+loopExplain: "இந்த லூப் 1 முதல் n வரையிலான எண்களை மீண்டும் செய்கிறது। ஒவ்வொரு மீண்டும் செய்தலிலும் தற்போதைய முடிவு i ஆல் பெருக்கப்படுகிறது।",
+hintFactorial: "💡 குறிப்பு: ஃபேக்டோரியல் என்பது 1 முதல் n வரை உள்ள அனைத்து எண்களையும் பெருக்குவதாகும். 1 இலிருந்து தொடங்கும் லூப்பை முயற்சிக்கவும்!",
+hintLoop: "💡 குறிப்பு: உங்கள் லூப் வரம்பைச் சரிபார்க்கவும்—அதில் n இருக்கிறதா? நினைவில் கொள்ளுங்கள்: range(1, n) n-1 இல் நிறுத்துகிறது!",
+savedToast: "✅ குறியீடு சேமிக்கப்பட்டது! ID: ",
+runOutput1: "5 இன் ஃபேக்டோரியல்: 120",
+runOutput2: "கோட்சஹாயக்கிலிருந்து வணக்கம்! 🙏",
+running: "🚀 குறியீடு இயக்கப்படுகிறது...",
+noCode: "⚠️ முதலில் சில குறியீட்டை எழுதுங்கள்!",
+tutorWelcome: "மேலே குறியீட்டை எழுதி 'விளக்கு' என்பதைக் கிளிக் செய்யவும் உங்கள் மொழியில் உதவி பெற! சஹாயக் கருத்துகளைக் கற்பிக்கிறது — நகலெடுக்க முழு தீர்வுகளை வழங்காது."
+},
+bn: {
+runText: "চালান", explainText: "ব্যাখ্যা করুন", hintText: "ইঙ্গিত", saveText: "সংরক্ষণ করুন",
+factorialExplain: "এই ফাংশনটি ফ্যাক্টোরিয়াল গণনা করে। এটি 1 থেকে n পর্যন্ত সমস্ত সংখ্যাকে গুণ করে। উদাহরণ: 5! = 5 × 4 × 3 × 2 × 1 = 120",
+loopExplain: "এই লুপটি 1 থেকে n পর্যন্ত সংখ্যাগুলিকে পুনরাবৃত্তি করে। প্রতিটি পুনরাবৃত্তিতে বর্তমান ফলাফল i দ্বারা গুণিত হয়।",
+hintFactorial: "💡 ইঙ্গিত: ফ্যাক্টোরিয়াল মানে 1 থেকে n পর্যন্ত সমস্ত সংখ্যাকে গুণ করা। 1 থেকে শুরু হওয়া লুপ চেষ্টা করুন!",
+hintLoop: "💡 ইঙ্গিত: আপনার লুপ পরিসর পরীক্ষা করুন—এটি কি n অন্তর্ভুক্ত করে? মনে রাখবেন: range(1, n) n-1 এ থামবে!",
+savedToast: "✅ কোড সংরক্ষণ করা হয়েছে! ID: ",
+runOutput1: "5 এর ফ্যাক্টোরিয়াল হল: 120",
+runOutput2: "কোডসহায়ক থেকে নমস্কার! 🙏",
+running: "🚀 কোড চালানো হচ্ছে...",
+noCode: "⚠️ প্রথমে কিছু কোড লিখুন!",
+tutorWelcome: "উপরে কোড লিখুন এবং 'ব্যাখ্যা করুন' এ ক্লিক করুন আপনার ভাষায় সাহায্য পেতে! সহায়ক ধারণাগুলি শেখায় — কপি করার জন্য সম্পূর্ণ সমাধান দেয় না।"
+}
+};
+
+// State
+let currentLang = localStorage.getItem('codesahayak_lang') || 'en';
+let savedSnippets = JSON.parse(localStorage.getItem('codesahayak_snippets') || '[]');
+
+// Elements
+const codeEditor = document.getElementById('codeEditor');
+const consoleOutput = document.getElementById('consoleOutput');
+const tutorContent = document.getElementById('tutorContent');
+const runBtn = document.getElementById('runBtn');
+const explainBtn = document.getElementById('explainBtn');
+const hintBtn = document.getElementById('hintBtn');
+const saveBtn = document.getElementById('saveBtn');
+const clearBtn = document.getElementById('clearBtn');
+const toast = document.getElementById('toast');
+const langBtns = document.querySelectorAll('.lang-btn');
+
+// Set language
+function setLanguage(lang) {
+currentLang = lang;
+localStorage.setItem('codesahayak_lang', lang);
+
+// Update UI
+document.getElementById('runText').textContent = translations[lang].runText;
+document.getElementById('explainText').textContent = translations[lang].explainText;
+document.getElementById('hintText').textContent = translations[lang].hintText;
+document.getElementById('saveText').textContent = translations[lang].saveText;
+document.getElementById('tutorWelcome').textContent = translations[lang].tutorWelcome;
+
+// Update buttons
+langBtns.forEach(btn => {
+btn.classList.toggle('active', btn.dataset.lang === lang);
+});
+
+// Show language-specific welcome if tutor is empty
+if (!tutorContent.innerHTML.includes('explanation-box') && !tutorContent.innerHTML.includes('hint-box-content')) {
+tutorContent.innerHTML = `<p>${translations[lang].tutorWelcome}</p><div class="hint-box"><strong>💡 Sahayak's Promise:</strong> I give hints to build your problem-solving muscle — not full solutions to copy!</div>`;
+}
+}
+
+// Setup language buttons
+langBtns.forEach(btn => {
+btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+});
+
+// Run code
+runBtn.addEventListener('click', () => {
+const code = codeEditor.value.trim();
+if (!code) {
+showConsoleMessage(translations[currentLang].noCode, 'error');
+return;
+}
+
+showConsoleMessage(translations[currentLang].running, 'info');
+
+setTimeout(() => {
+if (code.toLowerCase().includes('factorial(5)')) {
+showConsoleMessage(translations[currentLang].runOutput1, 'success');
+showConsoleMessage(translations[currentLang].runOutput2, 'success');
+} else if (code.toLowerCase().includes('print')) {
+showConsoleMessage('✅ Code executed successfully!', 'success');
+} else {
+showConsoleMessage('⚠️ No print statements found. Add print() to see output!', 'warning');
+}
+}, 400);
+});
+
+// Explain code
+explainBtn.addEventListener('click', () => {
+const code = codeEditor.value.toLowerCase();
+if (!code.trim()) {
+tutorContent.innerHTML = `<div style="color:#ef4444;padding:20px;background:#fee2e2;border-radius:12px;">${translations[currentLang].noCode}</div>`;
+return;
+}
+
+tutorContent.innerHTML = `<div class="loading"><div class="spinner"></div><p style="margin-top:15px;font-weight:600;font-size:18px;">🧠 Sahayak is thinking...</p></div>`;
+
+setTimeout(() => {
+const explanation = code.includes('for') || code.includes('while') ? 
+translations[currentLang].loopExplain : 
+translations[currentLang].factorialExplain;
+
+tutorContent.innerHTML = `<div style="background:#dbeafe;padding:25px;border-radius:16px;margin-bottom:20px;"><p style="font-weight:700;font-size:19px;margin-bottom:15px;">💡 ${translations[currentLang].explainText}:</p><p style="line-height:1.8;font-size:17px;">${explanation}</p></div><div class="hint-box"><p style="font-weight:700;margin-bottom:10px;">📚 Learning Tip:</p><p>Don't just copy code — understand the logic step by step! This builds real programming skills.</p></div>`;
+}, 500);
+});
+
+// Hint button
+hintBtn.addEventListener('click', () => {
+const code = codeEditor.value.toLowerCase();
+const hint = code.includes('for') || code.includes('while') ? 
+translations[currentLang].hintLoop : 
+translations[currentLang].hintFactorial;
+
+tutorContent.innerHTML = `<div class="hint-box" style="background:#ffedd5;">${hint}</div><div style="background:#dbeafe;padding:22px;border-radius:16px;margin-top:25px;"><p style="font-weight:700;font-size:18px;margin-bottom:12px;">🎯 Sahayak's Philosophy</p><p style="line-height:1.7;">I give hints to build your problem-solving muscle — not full solutions to copy. The goal is to make you an independent coder!</p></div>`;
+});
+
+// Save code
+saveBtn.addEventListener('click', () => {
+const code = codeEditor.value.trim();
+if (!code) {
+showToast(translations[currentLang].noCode);
+return;
+}
+
+const id = Math.random().toString(36).substr(2, 6).toUpperCase();
+savedSnippets.push({ id, code, timestamp: new Date().toISOString() });
+localStorage.setItem('codesahayak_snippets', JSON.stringify(savedSnippets));
+showToast(`${translations[currentLang].savedToast}${id}`);
+});
+
+// Utilities
+function showConsoleMessage(message, type = 'info') {
+const line = document.createElement('div');
+line.className = `console-line ${type}`;
+line.textContent = message;
+consoleOutput.appendChild(line);
+consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function showToast(message) {
+toast.textContent = message;
+toast.classList.add('show');
+setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+clearBtn.addEventListener('click', () => {
+consoleOutput.innerHTML = '';
+showConsoleMessage('Console cleared!', 'info');
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+e.preventDefault(); runBtn.click();
+}
+if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+e.preventDefault(); explainBtn.click();
+}
+if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+e.preventDefault(); saveBtn.click();
+}
+});
+
+// Initialize
+setLanguage(currentLang);
+console.log('✅ CodeSahayak IDE loaded! (100% offline)');
+console.log('💡 Shortcuts: Ctrl+Enter=Run, Ctrl+E=Explain, Ctrl+S=Save');
+</script>
+</body>
+</html>

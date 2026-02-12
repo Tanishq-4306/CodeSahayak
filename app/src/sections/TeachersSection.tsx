@@ -1,15 +1,15 @@
 import { useRef, useLayoutEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Check, ArrowRight, School, BarChart3, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/store';
-import { useUIStore } from '@/store/uiStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function TeachersSection() {
   const { t } = useTranslation();
-  const { openTeacherModal } = useUIStore();
+  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
@@ -192,7 +192,7 @@ export function TeachersSection() {
             </ul>
 
             <button
-              onClick={openTeacherModal}
+              onClick={() => navigate('/auth')}
               className="btn-primary flex items-center gap-2"
             >
               {t('seeDashboard')}

@@ -16,20 +16,31 @@ class LanguageManager {
                 const response = await fetch(`locales/${lang}.json`);
                 if (response.ok) {
                     this.translations[lang] = await response.json();
+                } else {
+                    console.warn(`Failed to load translations for ${lang}`);
                 }
             }
             this.updateUI();
+            console.log('✅ Translations loaded successfully');
         } catch (error) {
             console.error('Failed to load translations:', error);
             // Fallback to English if translations fail to load
             this.currentLanguage = 'en';
+            this.updateUI();
         }
     }
 
     // Get translated text
     t(key, fallback = key) {
         const translation = this.translations[this.currentLanguage]?.[key];
-        return translation || this.translations['en']?.[key] || fallback;
+        if (translation) return translation;
+        
+        // Fallback to English if available
+        const englishTranslation = this.translations['en']?.[key];
+        if (englishTranslation) return englishTranslation;
+        
+        // Final fallback to key or provided fallback
+        return fallback;
     }
 
     // Change language
@@ -54,17 +65,23 @@ class LanguageManager {
             const key = element.getAttribute('data-i18n');
             const translation = this.t(key);
             
-            if (element.tagName === 'INPUT' && element.type === 'text') {
-                element.placeholder = translation;
-            } else {
-                element.textContent = translation;
+            // Only update if we have a valid translation (not just the key back)
+            if (translation && translation !== key) {
+                if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'email' || element.type === 'password')) {
+                    element.placeholder = translation;
+                } else {
+                    element.textContent = translation;
+                }
             }
         });
 
         // Update document title if present
         const titleKey = document.documentElement.getAttribute('data-title-i18n');
         if (titleKey) {
-            document.title = this.t(titleKey);
+            const titleTranslation = this.t(titleKey);
+            if (titleTranslation && titleTranslation !== titleKey) {
+                document.title = titleTranslation;
+            }
         }
 
         // Update HTML lang attribute

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Check, Globe, Wifi, WifiOff } from 'lucide-react';
 import { useTranslation, type LanguageCode } from '@/store';
 import { useUIStore } from '@/store/uiStore';
@@ -11,6 +12,7 @@ import {
 import { toast } from 'sonner';
 
 export function OnboardingModal() {
+  const navigate = useNavigate();
   const { t, currentLanguage, setLanguage, languages } = useTranslation();
   const { isOnboardingOpen, closeOnboarding, isOfflineMode, setOfflineMode, downloadProgress, setDownloadProgress } = useUIStore();
   const [isDownloading, setIsDownloading] = useState(false);
@@ -45,6 +47,8 @@ export function OnboardingModal() {
     toast.success(`Welcome to CodeSahayak!`, {
       description: `Learning in ${languages[currentLanguage].nativeName}`,
     });
+    // Navigate to auth page (sign in/sign up)
+    navigate('/auth');
   };
 
   return (
