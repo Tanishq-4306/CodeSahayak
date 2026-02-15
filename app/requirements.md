@@ -1,7 +1,7 @@
 # CodeSahayak - Requirements Document
 
 ## Project Overview
-CodeSahayak is a multilingual coding education platform designed to make programming accessible to students across India, supporting 9 regional languages with offline-first capabilities.
+CodeSahayak is a multilingual coding education platform designed to make programming accessible to students across India. The platform features an interactive web-based IDE, AI-powered tutoring, and supports 9 Indian regional languages with a modern, responsive interface built using React, TypeScript, and Vite.
 
 ## Functional Requirements
 
@@ -23,9 +23,10 @@ CodeSahayak is a multilingual coding education platform designed to make program
   - Gujarati (ગુજરાતી)
   - Kannada (ಕನ್ನಡ)
   - Malayalam (മലയാളം)
-- Dynamic language switching
-- Localized UI elements and content
-- Language preference persistence
+- Dynamic language switching with visual flag-based selector
+- Localized UI elements and content using i18n
+- Language preference persistence in Zustand store
+- Real-time language switching without page reload
 
 ### 3. Student Features
 - Interactive code editor with syntax highlighting
@@ -46,15 +47,20 @@ CodeSahayak is a multilingual coding education platform designed to make program
 - Real-time student performance insights
 - Bulk student management
 
-### 5. Code Editor (IDE)
-- Multi-language support (Python, JavaScript, Java, C++, etc.)
-- Syntax highlighting
-- Auto-completion
-- Error detection and debugging
+### 5. Web-Based IDE
+- Full-featured browser-based IDE with Monaco Editor integration
+- Multi-language support (Python, JavaScript, Java, C++, SQL, HTML)
+- Syntax highlighting with CodeMirror themes
+- File explorer with folder/file tree structure
+- Tab-based file management system
+- Integrated terminal with command execution
+- AI assistant panel for real-time coding help
+- Resizable panels (sidebar, terminal, AI panel)
 - Code execution environment
-- File management system
-- Terminal integration
-- AI assistant integration
+- Sample project initialization
+- File operations (create, edit, delete, save)
+- Dark/light theme support
+- Customizable editor settings (font size, word wrap, minimap, line numbers)
 
 ### 6. AI Tutor Integration
 - Context-aware code explanations
@@ -70,13 +76,17 @@ CodeSahayak is a multilingual coding education platform designed to make program
 - Sync when online
 - Downloadable problem sets
 
-### 8. Progress Tracking
-- Coding streak tracking
+### 8. Progress Tracking & Gamification
+- Coding streak tracking with fire icon
+- XP (Experience Points) system with level progression
 - Problem completion statistics
-- Time spent analytics
-- Skill level assessment
+- Concept mastery tracking with percentage
 - Performance graphs and charts
-- Achievement milestones
+- Achievement system with unlockable badges
+- Pro membership status with crown badge
+- Recent submissions tracking with status indicators
+- Dashboard with comprehensive stats overview
+- Personalized progress visualization
 
 ## Non-Functional Requirements
 
@@ -130,20 +140,28 @@ CodeSahayak is a multilingual coding education platform designed to make program
 
 ## Technical Requirements
 
-### Frontend
-- React 18+ with TypeScript
-- Vite for build tooling
-- TailwindCSS for styling
-- Zustand for state management
-- React Router for navigation
-- Monaco Editor for code editing
-- GSAP for animations
+### Frontend Stack
+- React 19.2.0 with TypeScript 5.9.3
+- Vite 7.2.4 for build tooling and HMR
+- TailwindCSS 3.4.19 for styling with custom design system
+- Zustand 5.0.10 for state management (auth, IDE, language, UI stores)
+- React Router DOM 7.13.0 for navigation and routing
+- Monaco Editor 0.55.1 for code editing
+- CodeMirror 4.25.4 for additional language support
+- GSAP 3.14.2 with ScrollTrigger for smooth animations
+- Framer Motion 12.29.2 for component animations
+- Radix UI components for accessible UI primitives
+- Shadcn/ui component library
+- React Hook Form 7.70.0 with Zod validation
+- Lucide React for icons
+- Sonner for toast notifications
 
-### Backend
+### Backend (Planned/API Integration)
 - Node.js with Express
-- SQLite database
+- SQLite/Prisma database
 - JWT authentication
 - RESTful API design
+- Supabase integration (@supabase/supabase-js 2.93.3)
 - WebSocket for real-time features
 
 ### DevOps
@@ -157,17 +175,27 @@ CodeSahayak is a multilingual coding education platform designed to make program
 
 ### Student User Stories
 1. As a student, I want to learn coding in my native language so that I can understand concepts better
-2. As a student, I want to practice coding problems offline so that I can learn without internet
-3. As a student, I want to track my progress so that I can see my improvement
-4. As a student, I want AI assistance so that I can get help when stuck
-5. As a student, I want to earn achievements so that I stay motivated
+2. As a student, I want to use a web-based IDE so that I can code from any device without installation
+3. As a student, I want to track my progress with XP and levels so that I can see my improvement
+4. As a student, I want AI assistance in the IDE so that I can get help when stuck
+5. As a student, I want to earn achievements and maintain streaks so that I stay motivated
+6. As a student, I want to see my concept mastery levels so that I know what to focus on
+7. As a student, I want to access sample projects so that I can start learning immediately
+8. As a student, I want to customize my editor settings so that I can code comfortably
 
 ### Teacher User Stories
-1. As a teacher, I want to monitor student progress so that I can identify struggling students
-2. As a teacher, I want to create assignments so that I can assess student learning
-3. As a teacher, I want to see class analytics so that I can improve my teaching
+1. As a teacher, I want to monitor student progress through a dashboard so that I can identify struggling students
+2. As a teacher, I want to create and track assignments so that I can assess student learning
+3. As a teacher, I want to see class analytics and submission status so that I can improve my teaching
 4. As a teacher, I want to align content with syllabus so that students learn relevant topics
 5. As a teacher, I want to manage multiple classes so that I can organize my teaching
+6. As a teacher, I want to view student submissions with scores so that I can provide feedback
+
+### Landing Page User Stories
+1. As a visitor, I want to see features in my preferred language so that I can understand the platform
+2. As a visitor, I want smooth animations and transitions so that I have an engaging experience
+3. As a visitor, I want to see pricing plans clearly so that I can make informed decisions
+4. As a visitor, I want to navigate to signup/login easily so that I can start using the platform
 
 ## Success Metrics
 - User engagement: 70%+ daily active users

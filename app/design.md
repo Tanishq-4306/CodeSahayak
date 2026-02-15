@@ -41,87 +41,227 @@
 └─────────────────────────────────────────────────────────┘
 ```
 
+### Landing Page Structure (15 Sections)
+The landing page is a single-page application with scroll-driven animations:
+
+1. **HeroSection** - Hero with language selector and CTA
+2. **ImpactSection** - Problem statement and statistics
+3. **FeaturesSection** - 3 key features (Multilingual AI, Syllabus Aware, Teaches Not Replaces)
+4. **StudentsSection** - Student benefits with interactive demo
+5. **TeachersSection** - Teacher features and dashboard preview
+6. **EditorSection** - Live code editor demo
+7. **DebugModalSection** - Interactive debug walkthrough
+8. **ProgressSection** - Gamification and progress tracking
+9. **TestimonialsSection** - User testimonials (3 cards)
+10. **PricingSection** - 3 pricing tiers (Student Free, Pro ₹199/month, Institution)
+11. **OnboardingSection** - Onboarding flow preview
+12. **WhatsAppSection** - WhatsApp integration CTA
+13. **FAQSection** - 6 frequently asked questions
+14. **Footer** - Links, newsletter signup, social media
+
+All sections use GSAP ScrollTrigger for smooth scroll animations with pin/scrub effects.
+
 ## Frontend Architecture
 
 ### Component Structure
 ```
 src/
 ├── components/
-│   ├── ui/                    # Reusable UI components
+│   ├── ui/                    # 53 Reusable UI components (shadcn/ui)
 │   │   ├── button.tsx
 │   │   ├── card.tsx
 │   │   ├── dialog.tsx
-│   │   └── ...
+│   │   ├── dropdown-menu.tsx
+│   │   ├── input.tsx
+│   │   ├── accordion.tsx
+│   │   └── ... (50+ more)
 │   ├── ide/                   # IDE-specific components
-│   │   ├── CodeEditor.tsx
-│   │   ├── Terminal.tsx
-│   │   ├── FileExplorer.tsx
-│   │   ├── AIAssistant.tsx
-│   │   └── Toolbar.tsx
-│   ├── Navbar.tsx
-│   ├── MobileMenu.tsx
-│   ├── OnboardingModal.tsx
-│   └── TeacherModal.tsx
+│   │   ├── CodeEditor.tsx     # CodeMirror-based editor
+│   │   ├── Terminal.tsx       # Terminal emulator
+│   │   ├── FileExplorer.tsx   # File tree with CRUD
+│   │   ├── AIAssistant.tsx    # AI chat panel
+│   │   ├── TabBar.tsx         # Editor tabs
+│   │   └── Toolbar.tsx        # IDE toolbar
+│   ├── Navbar.tsx             # Main navigation with language selector
+│   ├── MobileMenu.tsx         # Mobile hamburger menu
+│   ├── OnboardingModal.tsx    # First-time user setup
+│   ├── TeacherModal.tsx       # Teacher dashboard preview
+│   ├── DebugWalkthroughModal.tsx  # Interactive debug tutorial
+│   ├── WhatsAppButton.tsx     # Floating WhatsApp CTA
+│   └── ErrorBoundary.tsx      # Error handling
 ├── pages/
-│   ├── AuthPage.tsx           # Login/Signup
-│   ├── DashboardPage.tsx      # Student dashboard
-│   ├── TeacherDashboardPage.tsx
-│   ├── EditorPage.tsx         # Code editor
-│   └── IDEPage.tsx            # Full IDE
-├── sections/                  # Landing page sections
-│   ├── HeroSection.tsx
-│   ├── FeaturesSection.tsx
-│   ├── StudentsSection.tsx
-│   ├── TeachersSection.tsx
-│   └── ...
-├── store/                     # State management
-│   ├── authStore.ts
-│   ├── ideStore.ts
-│   ├── languageStore.ts
-│   └── uiStore.ts
+│   ├── AuthPage.tsx           # Login/Signup with tabs
+│   ├── DashboardPage.tsx      # Student dashboard with progress
+│   ├── TeacherDashboardPage.tsx  # Teacher analytics
+│   ├── EditorPage.tsx         # Simple code editor
+│   └── IDEPage.tsx            # Full IDE with panels
+├── sections/                  # 15 Landing page sections
+│   ├── HeroSection.tsx        # Hero with language selector
+│   ├── ImpactSection.tsx      # Problem statement
+│   ├── FeaturesSection.tsx    # 3 key features
+│   ├── StudentsSection.tsx    # Student benefits
+│   ├── TeachersSection.tsx    # Teacher features
+│   ├── EditorSection.tsx      # Live code demo
+│   ├── DebugModalSection.tsx  # Debug walkthrough
+│   ├── ProgressSection.tsx    # Gamification preview
+│   ├── TestimonialsSection.tsx  # User testimonials
+│   ├── PricingSection.tsx     # 3 pricing tiers
+│   ├── OnboardingSection.tsx  # Onboarding preview
+│   ├── WhatsAppSection.tsx    # WhatsApp integration
+│   ├── FAQSection.tsx         # 6 FAQs
+│   └── Footer.tsx             # Footer with links
+├── store/                     # Zustand state management
+│   ├── authStore.ts           # Authentication state
+│   ├── ideStore.ts            # IDE state (files, tabs, code)
+│   ├── languageStore.ts       # i18n with 9 languages
+│   ├── uiStore.ts             # UI state (modals, menus)
+│   └── index.ts               # Store exports
 ├── hooks/
-│   ├── useAuth.ts
-│   └── use-mobile.ts
+│   ├── useAuth.ts             # Auth hook with API calls
+│   └── use-mobile.ts          # Mobile detection
 └── lib/
-    ├── utils.ts
-    └── programmingLanguages.ts
+    ├── utils.ts               # Utility functions
+    ├── programmingLanguages.ts  # Language configs
+    ├── fileIcons.tsx          # File type icons
+    └── supabase/
+        └── client.ts          # Supabase client (optional)
 ```
 
 ### State Management (Zustand)
 
-#### Auth Store
+#### Auth Store (`authStore.ts`)
 ```typescript
 interface AuthStore {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  
+  // Actions
   login: (email: string, password: string) => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => void;
+  checkAuth: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
 }
+
+// API Endpoints used:
+// POST /api/auth/login
+// POST /api/auth/signup
+// POST /api/auth/logout
+// GET /api/auth/me
 ```
 
-#### IDE Store
+#### IDE Store (`ideStore.ts`)
 ```typescript
 interface IDEStore {
+  // File System
   files: FileNode[];
-  activeFile: string | null;
-  code: string;
-  language: ProgrammingLanguage;
-  output: string;
-  isRunning: boolean;
-  setCode: (code: string) => void;
+  activeFileId: string | null;
+  
+  // Tabs
+  openTabs: Tab[];
+  activeTabId: string | null;
+  
+  // Editor Settings
+  theme: 'light' | 'dark';
+  fontSize: number;
+  lineNumbers: boolean;
+  
+  // Panels
+  sidebarVisible: boolean;
+  terminalVisible: boolean;
+  aiPanelVisible: boolean;
+  
+  // Terminal
+  terminalOutput: string[];
+  
+  // Actions
+  openTab: (file: FileNode) => void;
+  closeTab: (tabId: string) => void;
+  setActiveFile: (fileId: string) => void;
+  updateTabContent: (tabId: string, content: string) => void;
+  addFile: (file: FileNode, parentId?: string) => void;
+  deleteFile: (fileId: string) => void;
   runCode: () => Promise<void>;
+  toggleSidebar: () => void;
+  toggleTerminal: () => void;
+  toggleAIPanel: () => void;
+  initializeSampleProject: () => void;
 }
+
+// Uses CodeMirror for editor with language extensions:
+// - Python (@codemirror/lang-python)
+// - JavaScript/TypeScript (@codemirror/lang-javascript)
+// - Java (@codemirror/lang-java)
+// - C/C++ (@codemirror/lang-cpp)
+// - SQL (@codemirror/lang-sql)
+// - HTML (@codemirror/lang-html)
 ```
 
-#### Language Store
+#### Language Store (`languageStore.ts`)
 ```typescript
+type LanguageCode = 'en' | 'hi' | 'ta' | 'bn' | 'te' | 'mr' | 'gu' | 'kn' | 'ml';
+
+interface Language {
+  code: LanguageCode;
+  name: string;
+  nativeName: string;
+  flag: string;
+  color: string;
+}
+
 interface LanguageStore {
   currentLanguage: LanguageCode;
-  translations: Record<string, string>;
-  setLanguage: (lang: LanguageCode) => void;
-  t: (key: string) => string;
+  setLanguage: (code: LanguageCode) => void;
+  t: (key: TranslationKey) => string;
+}
+
+// Supported Languages:
+// 1. English (en) - 🇬🇧
+// 2. Hindi (hi) - 🇮🇳
+// 3. Tamil (ta) - 🇮🇳
+// 4. Bengali (bn) - 🇮🇳
+// 5. Telugu (te) - 🇮🇳
+// 6. Marathi (mr) - 🇮🇳
+// 7. Gujarati (gu) - 🇮🇳
+// 8. Kannada (kn) - 🇮🇳
+// 9. Malayalam (ml) - 🇮🇳
+
+// Persisted to localStorage using zustand/middleware/persist
+```
+
+#### UI Store (`uiStore.ts`)
+```typescript
+interface UIStore {
+  // Modals
+  isTeacherModalOpen: boolean;
+  isDebugModalOpen: boolean;
+  isOnboardingOpen: boolean;
+  
+  // Mobile menu
+  isMobileMenuOpen: boolean;
+  
+  // Debug walkthrough
+  debugStep: number;
+  
+  // Offline mode (UI state only)
+  isOfflineMode: boolean;
+  downloadProgress: number;
+  
+  // Actions
+  openTeacherModal: () => void;
+  closeTeacherModal: () => void;
+  openDebugModal: () => void;
+  closeDebugModal: () => void;
+  setDebugStep: (step: number) => void;
+  openOnboarding: () => void;
+  closeOnboarding: () => void;
+  toggleMobileMenu: () => void;
+  closeMobileMenu: () => void;
+  setOfflineMode: (enabled: boolean) => void;
+  setDownloadProgress: (progress: number) => void;
 }
 ```
 
@@ -130,40 +270,58 @@ interface LanguageStore {
 ### Color Palette
 
 #### Primary Colors
-- **Primary Blue**: `#2E86AB` - Main brand color
-- **Teal Accent**: `#14b8a6` - Secondary accent
-- **Orange Accent**: `#f59e0b` - Call-to-action
-- **Dark Navy**: `#1A1D2B` - Text primary
-- **Gray**: `#5A6078` - Text secondary
+- **Primary Blue**: `#2E86AB` - Main brand color, buttons, links
+- **Teal Accent**: `#14b8a6` - Secondary accent, gradients
+- **Orange Accent**: `#f59e0b` - Call-to-action highlights
+- **Dark Navy**: `#1A1D2B` - Primary text
+- **Gray**: `#5A6078` - Secondary text
+
+#### IDE Theme Colors
+- **Background**: `#1E1E2E` - Main IDE background
+- **Panel**: `#252532` - Sidebar/toolbar background
+- **Border**: `#2D2D3A` - Panel borders
+- **Accent**: `#6C5CE7` - Active elements, highlights
+- **Purple Light**: `#A29BFE` - Gradients
 
 #### Background Colors
-- **Light Background**: `#F6F7FB`
-- **Card Background**: `#FFFFFF`
-- **Hover State**: `#F0F4FA`
-- **Border**: `#E8EAF6`
+- **Light Background**: `#F6F7FB` - Landing page background
+- **Card Background**: `#FFFFFF` - Card/modal background
+- **Hover State**: `#F0F4FA` - Hover backgrounds
+- **Border**: `#E8EAF6` - Light borders
 
 #### Status Colors
-- **Success**: `#10b981` (Green)
-- **Error**: `#ef4444` (Red)
-- **Warning**: `#f59e0b` (Orange)
-- **Info**: `#3b82f6` (Blue)
+- **Success**: `#10b981` (Green) - Success messages
+- **Error**: `#ef4444` (Red) - Error states
+- **Warning**: `#f59e0b` (Orange) - Warnings
+- **Info**: `#3b82f6` (Blue) - Info messages
+
+#### Language Colors (9 Indian Languages)
+- **English**: `#6C7A89`
+- **Hindi**: `#D94B5E`
+- **Tamil**: `#FF9A8B`
+- **Bengali**: `#A29BFE`
+- **Telugu**: `#F18F01`
+- **Marathi**: `#4ECDC4`
+- **Gujarati**: `#95E1D3`
+- **Kannada**: `#F38181`
+- **Malayalam**: `#AA96DA`
 
 ### Typography
 
 #### Font Families
-- **Body**: `'Poppins', sans-serif` - Clean, modern, readable
-- **Headings**: `'Montserrat', sans-serif` - Bold, impactful
-- **Hero**: `'Space Grotesk', monospace` - Tech-focused
-- **Code**: `'Fira Code', 'Consolas', monospace` - Code editor
+- **Body**: `'Inter', 'Poppins', sans-serif` - Clean, modern, readable
+- **Headings**: `'Inter', 'Montserrat', sans-serif` - Bold, impactful
+- **Hero**: `'Space Grotesk', monospace` - Tech-focused headlines
+- **Code**: `'JetBrains Mono', 'Fira Code', 'Consolas', monospace` - Code editor
 
-#### Font Sizes
-- **Hero**: `3rem` (48px) - `4rem` (64px)
-- **H1**: `2.5rem` (40px)
-- **H2**: `2rem` (32px)
-- **H3**: `1.5rem` (24px)
-- **Body**: `1rem` (16px)
-- **Small**: `0.875rem` (14px)
-- **Tiny**: `0.75rem` (12px)
+#### Font Sizes (Tailwind Scale)
+- **Hero**: `text-3xl` to `text-6xl` (1.875rem - 3.75rem)
+- **H1**: `text-4xl` (2.25rem)
+- **H2**: `text-3xl` (1.875rem)
+- **H3**: `text-2xl` (1.5rem)
+- **Body**: `text-base` (1rem / 16px)
+- **Small**: `text-sm` (0.875rem / 14px)
+- **Tiny**: `text-xs` (0.75rem / 12px)
 
 #### Font Weights
 - **Light**: 300
@@ -200,7 +358,75 @@ Based on 4px base unit:
 
 ### Animations
 
-#### Keyframes
+#### GSAP ScrollTrigger Animations
+All landing page sections use GSAP ScrollTrigger for scroll-driven animations:
+
+```typescript
+// Hero Section - Pin and Exit Animation
+ScrollTrigger.create({
+  trigger: section,
+  start: 'top top',
+  end: '+=130%',
+  pin: true,
+  scrub: 0.6,
+  // Elements fade and slide out as user scrolls
+});
+
+// Section Entrance Animations
+gsap.fromTo(
+  element,
+  { y: 60, opacity: 0, scale: 0.98 },
+  {
+    y: 0,
+    opacity: 1,
+    scale: 1,
+    duration: 0.6,
+    stagger: 0.15,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 70%',
+      end: 'top 40%',
+      scrub: 0.4,
+    },
+  }
+);
+```
+
+#### Framer Motion Animations
+Used for component-level animations:
+
+```typescript
+// Modal entrance
+<motion.div
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{ opacity: 1, scale: 1 }}
+  exit={{ opacity: 0, scale: 0.95 }}
+  transition={{ duration: 0.2 }}
+>
+
+// Panel slide-in
+<motion.div
+  initial={{ width: 0, opacity: 0 }}
+  animate={{ width: 320, opacity: 1 }}
+  exit={{ width: 0, opacity: 0 }}
+  transition={{ duration: 0.2 }}
+>
+
+// List item stagger
+<AnimatePresence>
+  {items.map((item, i) => (
+    <motion.div
+      key={i}
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: i * 0.1 }}
+    />
+  ))}
+</AnimatePresence>
+```
+
+#### CSS Keyframes
 ```css
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -286,10 +512,10 @@ Based on 4px base unit:
 
 ## Responsive Design
 
-### Breakpoints
+### Breakpoints (Tailwind)
 ```css
 /* Mobile First Approach */
---mobile: 320px;      /* Small phones */
+--mobile: 320px;      /* Small phones (default) */
 --sm: 640px;          /* Large phones */
 --md: 768px;          /* Tablets */
 --lg: 1024px;         /* Small laptops */
@@ -300,14 +526,24 @@ Based on 4px base unit:
 ### Touch Targets
 - Minimum size: `44px × 44px` (Apple/Google guidelines)
 - Spacing between targets: `8px` minimum
-- Touch manipulation: `touch-action: manipulation`
+- Touch manipulation: `touch-action: manipulation` on all buttons
+- Active states: `active:scale-95` for touch feedback
 
 ### Mobile Optimizations
-- Hamburger menu for navigation
-- Collapsible sections
+- Hamburger menu for navigation (< 1024px)
+- Collapsible sections with AnimatePresence
 - Bottom navigation for key actions
-- Swipe gestures support
+- Swipe gestures support (planned)
 - Reduced animations on low-end devices
+- Responsive grid layouts (1-2-3 columns)
+- Mobile-first CSS approach
+
+### IDE Responsive Behavior
+- Panels collapse on mobile (< 768px)
+- File explorer becomes drawer
+- Terminal moves to bottom sheet
+- AI assistant becomes modal
+- Touch-friendly toolbar buttons
 
 ## Database Schema
 
@@ -394,6 +630,8 @@ POST   /api/ai/debug         - Debug assistance
 POST   /api/ai/suggest       - Code suggestions
 ```
 
+Note: Backend API is implemented but not fully integrated with frontend. Frontend uses mock data and localStorage for demonstration purposes.
+
 ## Security Considerations
 
 ### Authentication
@@ -417,19 +655,34 @@ POST   /api/ai/suggest       - Code suggestions
 ## Performance Optimizations
 
 ### Frontend
-- Code splitting and lazy loading
-- Image optimization (WebP format)
-- Tree shaking unused code
-- Minification and compression
-- Service Worker for caching
-- Virtual scrolling for long lists
+- Code splitting with React.lazy() and Suspense
+- Route-based lazy loading for pages
+- Image optimization (WebP format, lazy loading)
+- Tree shaking unused code (Vite)
+- Minification and compression (Vite production build)
+- Virtual scrolling for long lists (planned)
+- Memoization with React.memo and useMemo
+- Debounced search and input handlers
 
-### Backend
+### Build Optimizations (Vite)
+- Fast HMR (Hot Module Replacement)
+- Optimized dependency pre-bundling
+- CSS code splitting
+- Asset inlining for small files
+- Rollup for production builds
+
+### Backend (Not Fully Integrated)
 - Database indexing
 - Query optimization
 - Response caching
 - Connection pooling
 - Compression middleware
+
+### Current Limitations
+- No service worker/PWA implementation
+- No offline functionality (UI only)
+- Backend API exists but frontend uses mock data
+- No CDN integration yet
 
 ## Accessibility Features
 
@@ -452,7 +705,23 @@ POST   /api/ai/suggest       - Code suggestions
 
 ## Deployment Architecture
 
-### Production Environment
+### Current Setup
+```
+┌─────────────────────────────────────────┐
+│      Frontend (Vite + React)            │
+│      Port: 5173 (dev)                   │
+│      Build: npm run build               │
+└─────────────────────────────────────────┘
+                    │
+                    ▼
+┌─────────────────────────────────────────┐
+│      Backend (Express.js)               │
+│      Port: 3000                         │
+│      Database: SQLite (Prisma)          │
+└─────────────────────────────────────────┘
+```
+
+### Production Environment (Planned)
 ```
 ┌─────────────────────────────────────────┐
 │           Load Balancer (Nginx)         │
@@ -472,7 +741,7 @@ POST   /api/ai/suggest       - Code suggestions
         └─────────────────────┘
 ```
 
-### CI/CD Pipeline
+### CI/CD Pipeline (Planned)
 1. Code push to GitHub
 2. Automated tests run
 3. Build production bundle
@@ -481,9 +750,15 @@ POST   /api/ai/suggest       - Code suggestions
 6. Deploy to production
 7. Health checks
 
+### Current Deployment
+- Development: `npm run dev` (Vite dev server)
+- Backend: `npm run dev` in backend folder
+- No production deployment yet
+- Static hosting ready (Vercel/Netlify compatible)
+
 ## Monitoring & Analytics
 
-### Metrics to Track
+### Metrics to Track (Planned)
 - Page load times
 - API response times
 - Error rates
@@ -492,18 +767,43 @@ POST   /api/ai/suggest       - Code suggestions
 - Conversion rates
 - System resource usage
 
-### Tools
+### Tools (To Be Integrated)
 - Error tracking: Sentry
 - Analytics: Google Analytics
 - Performance: Lighthouse CI
 - Uptime monitoring: UptimeRobot
 
+### Current Implementation
+- Console logging for development
+- React Error Boundaries for error handling
+- No production monitoring yet
+
 ## Future Technical Enhancements
+
+### Planned Features
+- Real offline mode with service workers and PWA
+- Backend API integration (currently using mock data)
+- Real-time collaboration (WebRTC)
+- Advanced AI code assistance
+- Mobile app (React Native)
+- WhatsApp bot integration
+- Video tutorials integration
+- Community forum
+
+### Infrastructure Improvements
 - Microservices architecture
 - GraphQL API
-- Real-time collaboration (WebRTC)
 - Kubernetes orchestration
 - Machine learning for personalization
-- Advanced caching strategies
-- CDN integration
+- Advanced caching strategies (Redis)
+- CDN integration (Cloudflare)
 - Multi-region deployment
+- Database migration to PostgreSQL
+
+### Current Status
+- Frontend: 90% complete
+- Backend: 60% complete (exists but not integrated)
+- AI Integration: 20% complete (UI ready, API pending)
+- Mobile: 0% (responsive design ready)
+- Offline Mode: 0% (UI mockup only)
+- Analytics: 0%
