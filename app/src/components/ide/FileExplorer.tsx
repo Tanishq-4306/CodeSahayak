@@ -88,8 +88,8 @@ function FileTreeItem({ node, depth, onSelect }: FileTreeItemProps) {
         animate={{ opacity: 1, x: 0 }}
         className={`group flex items-center gap-1 py-1.5 px-2 cursor-pointer text-sm transition-colors ${
           isActive
-            ? 'bg-[#6C5CE7]/20 text-white'
-            : 'text-gray-400 hover:bg-[#2D2D3A] hover:text-white'
+            ? 'bg-[#6C5CE7]/10 text-[#6C5CE7] font-medium'
+            : 'text-[#636E72] hover:bg-[#F6F7FB] hover:text-[#1A1D2B]'
         }`}
         style={{ paddingLeft }}
         onClick={handleClick}
@@ -203,17 +203,17 @@ export function FileExplorer() {
   };
   
   return (
-    <div className="h-full flex flex-col bg-[#1E1E2E]">
+    <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-[#2D2D3A]">
-        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-[#E8EAF6]">
+        <span className="text-xs font-semibold text-[#636E72] uppercase tracking-wider">
           Explorer
         </span>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="w-6 h-6 text-gray-400 hover:text-white"
+            className="w-6 h-6 text-[#636E72] hover:text-[#1A1D2B] hover:bg-[#F6F7FB]"
             onClick={() => setShowNewFileInput(true)}
           >
             <Plus className="w-4 h-4" />
@@ -237,7 +237,7 @@ export function FileExplorer() {
               onKeyPress={(e) => e.key === 'Enter' && handleCreateFile()}
               onBlur={handleCreateFile}
               placeholder="filename.py"
-              className="w-full px-2 py-1 text-sm bg-[#2D2D3A] text-white rounded border border-[#3D3D4A] focus:border-[#6C5CE7] focus:outline-none"
+              className="w-full px-2 py-1 text-sm bg-white text-[#1A1D2B] rounded border border-[#E8EAF6] focus:border-[#6C5CE7] focus:outline-none"
               autoFocus
             />
           </motion.div>

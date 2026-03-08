@@ -76,24 +76,62 @@ export function AIAssistant() {
     
     // Add user message
     addAIMessage({ role: 'user', content: input });
+    const userInput = input;
     setInput('');
     
-    // Simulate AI response
-    setTimeout(() => {
-      const responses: Record<string, string> = {
-        en: "I'll help you with that! Let me analyze your code and provide the best solution.",
-        hi: "मैं आपकी मदद करूंगा! मैं आपके कोड का विश्लेषण करूंगा और सबसे अच्छा समाधान प्रदान करूंगा।",
-        ta: "நான் உங்களுக்கு உதவுவேன்! உங்கள் குறியீட்டை பகுப்பாய்வு செய்து சிறந்த தீர்வை வழங்குகிறேன்.",
+    // Get current code
+    const { openTabs, activeTabId } = useIDEStore.getState();
+    const activeTab = openTabs.find((t) => t.id === activeTabId);
+    
+    try {
+      // Call Gurujii API
+      const response = await fetch('http://localhost:5000/api/gurujii/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: activeTab?.content || '',
+          message: userInput,
+          language: currentLanguage,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      // Add AI response
+      addAIMessage({
+        role: 'assistant',
+        content: result.explanation || "I'm here to help! Please provide more details about what you need.",
+      });
+      
+      // Play voice if available
+      if (result.voiceUrl) {
+        const audio = new Audio(`http://localhost:5000${result.voiceUrl}`);
+        audio.play().catch(err => console.error('Failed to play voice:', err));
+      }
+    } catch (error) {
+      console.error('Gurujii API error:', error);
+      
+      // Fallback response
+      const fallbackResponses: Record<string, string> = {
+        en: "I'm having trouble connecting to my AI brain right now. Please make sure the Gurujii API is running on http://localhost:5000",
+        hi: "मुझे अभी अपने AI दिमाग से जुड़ने में परेशानी हो रही है। कृपया सुनिश्चित करें कि Gurujii API http://localhost:5000 पर चल रहा है",
+        ta: "எனது AI மூளையுடன் இணைவதில் சிக்கல் உள்ளது. Gurujii API http://localhost:5000 இல் இயங்குகிறதா என்பதை உறுதிப்படுத்தவும்",
       };
       
       addAIMessage({
         role: 'assistant',
-        content: responses[currentLanguage as keyof typeof responses] || responses.en,
+        content: fallbackResponses[currentLanguage as keyof typeof fallbackResponses] || fallbackResponses.en,
       });
-    }, 1000);
+    }
   };
   
-  const handleQuickAction = (actionId: string) => {
+  const handleQuickAction = async (actionId: string) => {
     const { openTabs, activeTabId } = useIDEStore.getState();
     const activeTab = openTabs.find((t) => t.id === activeTabId);
     
@@ -105,34 +143,55 @@ export function AIAssistant() {
       return;
     }
     
-    const codePreview = activeTab.content.slice(0, 200) + '...';
-    
-    const actionMessages: Record<string, { user: string; assistant: string }> = {
-      explain: {
-        user: `Please explain this code:\n\`\`\`\n${codePreview}\n\`\`\``,
-        assistant: "This code defines a function that calculates the factorial of a number using recursion. Let me break it down:\n\n1. **Base case**: If n <= 1, return 1\n2. **Recursive case**: n * factorial(n-1)\n\nThe function calls itself with a smaller value until it reaches the base case.",
-      },
-      debug: {
-        user: `Please debug this code:\n\`\`\`\n${codePreview}\n\`\`\``,
-        assistant: "I've analyzed your code and found a potential issue:\n\n**Issue**: The recursion doesn't have proper error handling for negative numbers.\n\n**Fix**: Add a check at the beginning:\n```python\nif n < 0:\n    raise ValueError('Factorial not defined for negative numbers')\n```",
-      },
-      hint: {
-        user: 'Give me a hint about this code',
-        assistant: "**Hint**: Think about what happens when you call factorial(0). Does your base case handle it correctly?",
-      },
-      improve: {
-        user: 'How can I improve this code?',
-        assistant: "Here are some improvements:\n\n1. **Add type hints**:\n   ```python\n   def factorial(n: int) -> int:\n   ```\n\n2. **Add docstring** with examples\n\n3. **Add memoization** for better performance\n\n4. **Handle edge cases** (negative numbers, non-integers)",
-      },
+    const actionPrompts: Record<string, string> = {
+      explain: 'Please explain this code in detail',
+      debug: 'Please debug this code and find any errors',
+      hint: 'Give me a hint about how to improve this code',
+      improve: 'How can I improve this code? Suggest best practices',
     };
     
-    const message = actionMessages[actionId];
-    if (message) {
-      addAIMessage({ role: 'user', content: message.user });
+    const userMessage = actionPrompts[actionId] || 'Help me with this code';
+    addAIMessage({ role: 'user', content: userMessage });
+    
+    try {
+      // Call Gurujii API
+      const response = await fetch('http://localhost:5000/api/gurujii/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: activeTab.content,
+          message: userMessage,
+          language: currentLanguage,
+        }),
+      });
       
-      setTimeout(() => {
-        addAIMessage({ role: 'assistant', content: message.assistant });
-      }, 800);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      // Add AI response
+      addAIMessage({
+        role: 'assistant',
+        content: result.explanation || "I've analyzed your code. Let me help you with that!",
+      });
+      
+      // Play voice if available
+      if (result.voiceUrl) {
+        const audio = new Audio(`http://localhost:5000${result.voiceUrl}`);
+        audio.play().catch(err => console.error('Failed to play voice:', err));
+      }
+    } catch (error) {
+      console.error('Gurujii API error:', error);
+      
+      // Fallback response
+      addAIMessage({
+        role: 'assistant',
+        content: 'Unable to connect to Gurujii AI. Please ensure the API is running on http://localhost:5000',
+      });
     }
   };
   
@@ -172,7 +231,7 @@ export function AIAssistant() {
         <div className="flex items-center gap-2">
           <Bot className="w-4 h-4 text-[#6C5CE7]" />
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-            AI Tutor
+            Gurujii
           </span>
         </div>
         
@@ -238,7 +297,7 @@ export function AIAssistant() {
                     <div className="w-4 h-4 rounded-full bg-white/20" />
                   )}
                   <span className="text-xs font-medium">
-                    {message.role === 'assistant' ? 'AI Tutor' : 'You'}
+                    {message.role === 'assistant' ? 'Gurujii' : 'You'}
                   </span>
                   {message.role === 'assistant' && (
                     <button

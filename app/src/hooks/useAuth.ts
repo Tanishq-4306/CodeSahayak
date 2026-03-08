@@ -39,7 +39,7 @@ export const useAuth = () => {
       const response = await api.signup(data);
       login(response.user, response.token);
       toast.success('Account created successfully!');
-      return { success: true };
+      return { success: true, user: response.user };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Signup failed';
       toast.error(message);
@@ -55,7 +55,7 @@ export const useAuth = () => {
       const response = await api.login(email, password);
       login(response.user, response.token);
       toast.success('Welcome back!');
-      return { success: true };
+      return { success: true, user: response.user };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed';
       toast.error(message);

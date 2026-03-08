@@ -81,9 +81,69 @@ export const useAuthStore = create<AuthState>()(
 // API base URL
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// Mock mode flag - set to true to use mock data without backend
+const USE_MOCK_AUTH = true;
+
+// Mock user data
+const mockUsers = {
+  'student@test.com': {
+    user: {
+      id: '1',
+      email: 'student@test.com',
+      name: 'Priya Sharma',
+      role: 'STUDENT' as UserRole,
+      language: 'en',
+      isPro: false,
+      streak: 7,
+      xp: 450,
+      level: 5,
+      createdAt: new Date().toISOString(),
+    },
+    password: 'password',
+    token: 'mock-student-token-123',
+  },
+  'teacher@test.com': {
+    user: {
+      id: '2',
+      email: 'teacher@test.com',
+      name: 'Dr. Rajesh Kumar',
+      role: 'TEACHER' as UserRole,
+      language: 'en',
+      isPro: true,
+      streak: 15,
+      xp: 1200,
+      level: 12,
+      institution: 'IIT Delhi',
+      department: 'Computer Science',
+      createdAt: new Date().toISOString(),
+    },
+    password: 'password',
+    token: 'mock-teacher-token-456',
+  },
+};
+
 // API helper functions
 export const api = {
   async request(endpoint: string, options: RequestInit = {}) {
+    // Mock authentication - bypass real API calls
+    if (USE_MOCK_AUTH) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Handle mock endpoints
+      if (endpoint === '/auth/me') {
+        const token = useAuthStore.getState().token;
+        const mockUser = Object.values(mockUsers).find(u => u.token === token);
+        if (mockUser) {
+          return { user: mockUser.user };
+        }
+        throw new Error('Unauthorized');
+      }
+      
+      // For other endpoints, return empty data
+      return {};
+    }
+
     const token = useAuthStore.getState().token;
     
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -104,7 +164,7 @@ export const api = {
   },
 
   // Auth endpoints
-  signup: (data: {
+  signup: async (data: {
     email: string;
     password: string;
     name: string;
@@ -112,10 +172,57 @@ export const api = {
     language: string;
     institution?: string;
     department?: string;
-  }) => api.request('/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
+  }) => {
+    if (USE_MOCK_AUTH) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Create mock user
+      const newUser: User = {
+        id: Math.random().toString(36).substr(2, 9),
+        email: data.email,
+        name: data.name,
+        role: data.role,
+        language: data.language,
+        isPro: false,
+        streak: 0,
+        xp: 0,
+        level: 1,
+        institution: data.institution,
+        department: data.department,
+        createdAt: new Date().toISOString(),
+      };
+      
+      const token = `mock-token-${newUser.id}`;
+      
+      // Store in mock users
+      mockUsers[data.email] = {
+        user: newUser,
+        password: data.password,
+        token,
+      };
+      
+      return { user: newUser, token };
+    }
+    
+    return api.request('/auth/signup', { method: 'POST', body: JSON.stringify(data) });
+  },
 
-  login: (email: string, password: string) =>
-    api.request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  login: async (email: string, password: string) => {
+    if (USE_MOCK_AUTH) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const mockUser = mockUsers[email];
+      if (mockUser && mockUser.password === password) {
+        return { user: mockUser.user, token: mockUser.token };
+      }
+      
+      throw new Error('Invalid email or password');
+    }
+    
+    return api.request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+  },
 
   getMe: () => api.request('/auth/me'),
 

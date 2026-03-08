@@ -147,7 +147,7 @@ function LandingPage() {
   );
 }
 
-// Protected Route Component
+// Protected Route Component with Smart Redirect
 function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode; requiredRole?: 'STUDENT' | 'TEACHER' | 'ADMIN' }) {
   const { isAuthenticated, user, isLoading } = useAuth();
 
@@ -163,7 +163,12 @@ function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode;
     return <Navigate to="/auth" replace />;
   }
 
+  // Smart redirect based on user role
   if (requiredRole && user?.role !== requiredRole && user?.role !== 'ADMIN') {
+    // Redirect to appropriate dashboard based on user role
+    if (user?.role === 'TEACHER') {
+      return <Navigate to="/teacher-dashboard" replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -177,6 +182,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
+        
+        {/* Smart dashboard router - redirects to correct dashboard based on role */}
         <Route 
           path="/dashboard" 
           element={
@@ -193,6 +200,8 @@ function App() {
             </ProtectedRoute>
           } 
         />
+        
+        {/* Other protected routes */}
         <Route 
           path="/editor" 
           element={

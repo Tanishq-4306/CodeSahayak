@@ -93,32 +93,68 @@ export function Terminal() {
     }
   };
   
-  const runCode = () => {
+  const runCode = async () => {
     const { openTabs, activeTabId } = useIDEStore.getState();
     const activeTab = openTabs.find((t) => t.id === activeTabId);
     
-    if (activeTab) {
-      addTerminalOutput({ type: 'input', content: `$ python ${activeTab.name}` });
+    if (!activeTab) {
+      addTerminalOutput({ 
+        type: 'error', 
+        content: '❌ Error: No file is currently open. Please open a file to run code.' 
+      });
+      return;
+    }
+    
+    addTerminalOutput({ type: 'input', content: `$ python ${activeTab.name}` });
+    addTerminalOutput({ type: 'output', content: 'Executing code...\n' });
+    
+    try {
+      // Execute Python code using Gurujii API
+      const response = await fetch('http://localhost:5000/api/gurujii/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: activeTab.content,
+          message: 'Execute this code',
+          language: 'en',
+        }),
+      });
       
-      setTimeout(() => {
-        // Simulate code execution output
-        if (activeTab.content.includes('factorial')) {
-          addTerminalOutput({
-            type: 'output',
-            content: 'Hello, Student! Welcome to coding.\nFactorial of 5 is: 120',
-          });
-        } else if (activeTab.content.includes('print')) {
-          const matches = activeTab.content.match(/print\(['"`](.+?)['"`]\)/g);
-          if (matches) {
-            matches.forEach((match) => {
-              const content = match.match(/print\(['"`](.+?)['"`]\)/)?.[1] || '';
-              addTerminalOutput({ type: 'output', content });
-            });
-          }
-        } else {
-          addTerminalOutput({ type: 'output', content: 'Program executed successfully.' });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      if (result.hasError) {
+        // Show error with details
+        addTerminalOutput({
+          type: 'error',
+          content: `${result.explanation}\n`,
+        });
+        
+        // Play voice if available
+        if (result.voiceUrl) {
+          const audio = new Audio(`http://localhost:5000${result.voiceUrl}`);
+          audio.play().catch(err => console.error('Failed to play voice:', err));
         }
-      }, 500);
+      } else {
+        // Code executed successfully - show output
+        const outputText = result.output || result.explanation;
+        
+        addTerminalOutput({
+          type: 'output',
+          content: outputText,
+        });
+      }
+    } catch (error) {
+      console.error('Code execution error:', error);
+      addTerminalOutput({
+        type: 'error',
+        content: `❌ Failed to execute code: ${error instanceof Error ? error.message : 'Unknown error'}\n\nMake sure Gurujii API is running on http://localhost:5000`,
+      });
     }
   };
   

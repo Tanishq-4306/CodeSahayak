@@ -58,8 +58,13 @@ export default function AuthPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await login(formData.email, formData.password);
-    if (result.success) {
-      navigate('/dashboard');
+    if (result.success && result.user) {
+      // Redirect based on user role
+      if (result.user.role === 'TEACHER' || result.user.role === 'ADMIN') {
+        navigate('/teacher-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
@@ -80,8 +85,13 @@ export default function AuthPage() {
       department: formData.department,
     });
     
-    if (result.success) {
-      navigate('/dashboard');
+    if (result.success && result.user) {
+      // Redirect based on user role
+      if (result.user.role === 'TEACHER' || result.user.role === 'ADMIN') {
+        navigate('/teacher-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
