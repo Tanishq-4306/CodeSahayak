@@ -263,66 +263,66 @@ def generate_voice(text, language="hi"):
 
 def gurujii_explain(code, message, user_language):
     """Main Gurujii engine - Enhanced with teaching features"""
-    
+
     message_lower = message.lower()
-    
+
     # Detect concepts in the code
     if TEACHING_ENGINE_AVAILABLE:
         concepts = detect_concepts(code, user_language)
     else:
         concepts = []
-    
+
     # Determine the action based on the message
     is_explain_request = 'explain' in message_lower and 'detail' in message_lower
     is_hint_request = 'hint' in message_lower
     is_improve_request = 'improve' in message_lower or 'best practice' in message_lower
     is_debug_request = 'debug' in message_lower or 'error' in message_lower or 'find' in message_lower
     is_execute_request = 'execute' in message_lower or 'run' in message_lower
-    
+
     # Handle EXPLAIN request - Don't execute, just analyze
     if is_explain_request:
         try:
             import ast
             tree = ast.parse(code)
-            
-            explanation = "📚 Code Explanation:\\n\\n"
-            
+
+            explanation = "📚 Code Explanation:\n\n"
+
             functions = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
             if functions:
-                explanation += f"🔧 Functions defined: {', '.join(functions)}\\n"
-            
+                explanation += f"🔧 Functions defined: {', '.join(functions)}\n"
+
             loops = len([node for node in ast.walk(tree) if isinstance(node, (ast.For, ast.While))])
             if loops:
-                explanation += f"🔄 Contains {loops} loop(s)\\n"
-            
+                explanation += f"🔄 Contains {loops} loop(s)\n"
+
             conditionals = len([node for node in ast.walk(tree) if isinstance(node, ast.If)])
             if conditionals:
-                explanation += f"🔀 Contains {conditionals} conditional(s)\\n"
-            
+                explanation += f"🔀 Contains {conditionals} conditional(s)\n"
+
             # Count lines
-            lines = len([l for l in code.split('\\n') if l.strip()])
-            explanation += f"📝 Total lines: {lines}\\n"
-            
+            lines = len([l for l in code.split('\n') if l.strip()])
+            explanation += f"📝 Total lines: {lines}\n"
+
             # Add concept detection
             if concepts:
-                explanation += f"\\n🎯 Concepts detected:\\n"
+                explanation += f"\n🎯 Concepts detected:\n"
                 for concept in concepts:
-                    explanation += f"   • {concept['concept']} ({concept['difficulty']})\\n"
-                    explanation += f"     {concept['explanation'][:100]}...\\n"
-            
+                    explanation += f"   • {concept['concept']} ({concept['difficulty']})\n"
+                    explanation += f"     {concept['explanation'][:100]}...\n"
+
             # Add logic explanation if available
             if TEACHING_ENGINE_AVAILABLE:
                 logic = explain_logic_step_by_step(code, user_language)
-                explanation += f"\\n{logic}"
-            
+                explanation += f"\n{logic}"
+
             # Add visualization for recursion
             if TEACHING_ENGINE_AVAILABLE:
                 viz = visualize_execution(code, user_language)
                 if viz:
-                    explanation += f"\\n\\n{viz}"
-            
-            explanation += "\\n\\n✨ To see the output, click the Run button in the terminal!"
-            
+                    explanation += f"\n\n{viz}"
+
+            explanation += "\n\n✨ To see the output, click the Run button in the terminal!"
+
             return {
                 "explanation": explanation,
                 "hasError": False,
@@ -335,121 +335,117 @@ def gurujii_explain(code, message, user_language):
                 "hasError": False,
                 "detectedLanguage": user_language
             }
-    
+
     # Handle HINT request - Provide hints without executing
     if is_hint_request:
-        hints_text = "💡 Code Improvement Hints:\\n\\n"
-        
+        hints_text = "💡 Code Improvement Hints:\n\n"
+
         # Check for common improvements
         if "print" in code and "(" not in code:
-            hints_text += "• Use parentheses with print() in Python 3\\n"
-        
+            hints_text += "• Use parentheses with print() in Python 3\n"
+
         if "def" in code and "return" not in code:
-            hints_text += "• Consider adding a return statement to your function\\n"
-        
-        if "#" not in code and len(code.split('\\n')) > 5:
-            hints_text += "• Add comments to explain complex logic\\n"
-        
-        triple_quote = chr(34) * 3
-        single_triple = chr(39) * 3
-        if triple_quote not in code and single_triple not in code and "def" in code:
-            hints_text += "• Add docstrings to document your functions\\n"
-        
-        hints_text += "\\n🌟 General Best Practices:\\n"
-        hints_text += "• Use meaningful variable names\\n"
-        hints_text += "• Keep functions small and focused\\n"
-        hints_text += "• Handle edge cases and errors\\n"
-        hints_text += "• Write tests for your code\\n"
-        
+            hints_text += "• Consider adding a return statement to your function\n"
+
+        if "#" not in code and len(code.split('\n')) > 5:
+            hints_text += "• Add comments to explain complex logic\n"
+
+        if '"""' not in code and "'''" not in code and "def" in code:
+            hints_text += "• Add docstrings to document your functions\n"
+
+        hints_text += "\n🌟 General Best Practices:\n"
+        hints_text += "• Use meaningful variable names\n"
+        hints_text += "• Keep functions small and focused\n"
+        hints_text += "• Handle edge cases and errors\n"
+        hints_text += "• Write tests for your code\n"
+
         return {
             "explanation": hints_text,
             "hasError": False,
             "detectedLanguage": user_language
         }
-    
+
     # Handle IMPROVE request - Suggest improvements without executing
     if is_improve_request:
-        improve_text = "✨ Code Improvement Suggestions:\\n\\n"
-        
+        improve_text = "✨ Code Improvement Suggestions:\n\n"
+
         try:
             import ast
             tree = ast.parse(code)
-            
+
             functions = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
-            
-            improve_text += "📊 Current Analysis:\\n"
-            improve_text += f"• Functions: {len(functions)}\\n"
-            improve_text += f"• Lines of code: {len([l for l in code.split(chr(92)+'n') if l.strip()])}\\n\\n"
-            
-            improve_text += "🎯 Suggestions:\\n"
-            
-            triple_quote = chr(34) * 3
-            single_triple = chr(39) * 3
-            if not code.strip().startswith(triple_quote) and not code.strip().startswith(single_triple):
-                improve_text += "1. Add a module docstring at the top\\n"
-            
+
+            improve_text += "📊 Current Analysis:\n"
+            improve_text += f"• Functions: {len(functions)}\n"
+            improve_text += f"• Lines of code: {len([l for l in code.split('\\n') if l.strip()])}\n\n"
+
+            improve_text += "🎯 Suggestions:\n"
+
+            if not code.strip().startswith('"""') and not code.strip().startswith("'''"):
+                improve_text += "1. Add a module docstring at the top\n"
+
             if functions:
-                improve_text += "2. Ensure all functions have docstrings\\n"
-                improve_text += "3. Use type hints for parameters and return values\\n"
-            
-            improve_text += "4. Follow PEP 8 style guidelines\\n"
-            improve_text += "5. Add error handling with try-except blocks\\n"
-            improve_text += "6. Write unit tests for your functions\\n"
-            
-            improve_text += "\\n💡 Best Practices:\\n"
-            improve_text += "• Use meaningful names (not x, y, z)\\n"
-            improve_text += "• Keep functions under 20 lines\\n"
-            improve_text += "• One function = one responsibility\\n"
-            improve_text += "• Avoid global variables\\n"
-            improve_text += "• Use constants for magic numbers\\n"
-            
+                improve_text += "2. Ensure all functions have docstrings\n"
+                improve_text += "3. Use type hints for parameters and return values\n"
+
+            improve_text += "4. Follow PEP 8 style guidelines\n"
+            improve_text += "5. Add error handling with try-except blocks\n"
+            improve_text += "6. Write unit tests for your functions\n"
+
+            improve_text += "\n💡 Best Practices:\n"
+            improve_text += "• Use meaningful names (not x, y, z)\n"
+            improve_text += "• Keep functions under 20 lines\n"
+            improve_text += "• One function = one responsibility\n"
+            improve_text += "• Avoid global variables\n"
+            improve_text += "• Use constants for magic numbers\n"
+
         except:
-            improve_text += "• Review your code structure\\n"
-            improve_text += "• Add comments and documentation\\n"
-            improve_text += "• Follow Python best practices\\n"
-        
+            improve_text += "• Review your code structure\n"
+            improve_text += "• Add comments and documentation\n"
+            improve_text += "• Follow Python best practices\n"
+
         return {
             "explanation": improve_text,
             "hasError": False,
             "detectedLanguage": user_language
         }
-    
+
     # Handle DEBUG request or execution - Check for errors
     execution_result = execute_python_code(code)
-    
+
     if execution_result['success']:
         # Code executed successfully
         output = execution_result['output'].strip()
-        
+
         if output:
-            response = f"✓ Code executed successfully!\\n\\nOutput:\\n{output}"
+            response = f"✓ Code executed successfully!\n\nOutput:\n{output}"
         else:
             response = "✓ Code executed successfully! No output produced."
-        
+
         response_translated = translate_text(response, user_language)
-        
+
         return {
             "explanation": response_translated,
             "hasError": False,
             "output": output,
             "detectedLanguage": user_language
         }
-    
+
     # Code has errors - Use teaching engine for better explanations
     error = execution_result['error']
     error_type = execution_result['error_type']
     error_message = execution_result['error_message']
-    
+
     # Use offline error database if available
     if TEACHING_ENGINE_AVAILABLE and error_type in OFFLINE_ERROR_DB:
         error_info = OFFLINE_ERROR_DB[error_type].get(user_language, OFFLINE_ERROR_DB[error_type]["en"])
-        
+
         # Generate hints
         hints = generate_hints(code, error_type, error_message, user_language)
-        
+
         # Explain thinking process
         thinking = explain_thinking_process(code, error_type, user_language)
-        
+
         response = f"""🐛 Error Detected: {error_type}
 
 📍 {error_message}
@@ -468,9 +464,9 @@ def gurujii_explain(code, message, user_language):
 📚 Concept: {error_info['concept']}
 
 💭 Ask "Why?" to understand this error deeply!"""
-        
+
         voice_url = generate_voice(error_info['explanation'], user_language)
-        
+
         return {
             "explanation": response,
             "hasError": True,
@@ -481,16 +477,16 @@ def gurujii_explain(code, message, user_language):
             "voiceUrl": voice_url,
             "detectedLanguage": user_language
         }
-    
+
     # Check if it's a known error type (fallback to original database)
     if error_type in ERROR_DB:
         base_message = ERROR_DB[error_type].get(user_language, ERROR_DB[error_type]["en"])
-        
+
         # Add specific error details
-        response = f"❌ {error_type}: {error_message}\\n\\n{base_message}"
-        
+        response = f"❌ {error_type}: {error_message}\n\n{base_message}"
+
         voice_url = generate_voice(base_message, user_language)
-        
+
         return {
             "explanation": response,
             "hasError": True,
@@ -499,7 +495,7 @@ def gurujii_explain(code, message, user_language):
             "voiceUrl": voice_url,
             "detectedLanguage": user_language
         }
-    
+
     # Use LLM for unknown errors
     if generator:
         prompt = f"""You are Gurujii, a friendly Indian coding teacher.
@@ -513,15 +509,15 @@ Provide a clear, beginner-friendly explanation in 2-3 sentences."""
         try:
             result = generator(prompt, max_new_tokens=150, do_sample=True, temperature=0.7)
             llm_response = result[0]["generated_text"]
-            
+
             # Extract only the explanation part
             if "Provide a clear" in llm_response:
                 llm_response = llm_response.split("Provide a clear")[0].strip()
-            
-            response = f"❌ {error_type}: {error_message}\\n\\n{llm_response}"
+
+            response = f"❌ {error_type}: {error_message}\n\n{llm_response}"
             response_translated = translate_text(response, user_language)
             voice_url = generate_voice(response_translated, user_language)
-            
+
             return {
                 "explanation": response_translated,
                 "hasError": True,
@@ -532,10 +528,10 @@ Provide a clear, beginner-friendly explanation in 2-3 sentences."""
             }
         except Exception as e:
             print(f"LLM generation error: {e}")
-    
+
     # Fallback response
-    response = f"❌ {error_type}: {error_message}\\n\\nThere's an error in your code. Please check the syntax and try again."
-    
+    response = f"❌ {error_type}: {error_message}\n\nThere's an error in your code. Please check the syntax and try again."
+
     return {
         "explanation": response,
         "hasError": True,
@@ -543,6 +539,7 @@ Provide a clear, beginner-friendly explanation in 2-3 sentences."""
         "errorMessage": error_message,
         "detectedLanguage": user_language
     }
+
 
 # API Routes
 

@@ -245,7 +245,7 @@ export function FileExplorer() {
       </AnimatePresence>
       
       {/* File Tree */}
-      <div className="flex-1 overflow-auto py-2">
+      <div className="flex-1 overflow-auto py-2 file-explorer-scrollbar">
         {files.map((node) => (
           <FileTreeItem
             key={node.id}

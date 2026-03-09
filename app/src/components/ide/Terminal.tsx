@@ -224,7 +224,8 @@ export function Terminal() {
       {/* Terminal Output */}
       <div
         ref={terminalRef}
-        className="flex-1 overflow-auto p-3 font-mono text-sm"
+        className="flex-1 overflow-y-auto overflow-x-hidden p-3 font-mono text-sm terminal-scrollbar"
+        style={{ maxHeight: '100%' }}
       >
         {terminalOutputs.map((output) => (
           <div
@@ -237,7 +238,7 @@ export function Terminal() {
                 : 'text-gray-300'
             }`}
           >
-            <pre className="whitespace-pre-wrap">{output.content}</pre>
+            <pre className="whitespace-pre-wrap break-words">{output.content}</pre>
           </div>
         ))}
       </div>

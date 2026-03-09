@@ -140,7 +140,7 @@ export default function IDEPage() {
       </header>
       
       {/* Main IDE Layout */}
-      <div className="flex-1 flex overflow-hidden bg-[#F6F7FB]">
+      <div className="flex-1 flex overflow-hidden bg-[#F6F7FB] ide-page-scrollbar">
         {/* Sidebar: File Explorer */}
         <AnimatePresence>
           {sidebarVisible && (
@@ -149,7 +149,7 @@ export default function IDEPage() {
               animate={{ width: 260, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="border-r border-[#E8EAF6] bg-white"
+              className="border-r border-[#E8EAF6] bg-white overflow-hidden"
             >
               <FileExplorer />
             </motion.div>

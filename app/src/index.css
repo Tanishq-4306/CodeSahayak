@@ -199,6 +199,15 @@
   background: linear-gradient(180deg, #257a9e 0%, #0d9488 100%);
 }
 
+/* Force scrollbars to always be visible */
+* {
+  scrollbar-width: auto;
+}
+
+*::-webkit-scrollbar {
+  display: block;
+}
+
 /* Selection */
 ::selection {
   background: rgba(46, 134, 171, 0.25);
@@ -360,3 +369,186 @@
 .lang-kn { font-family: 'Noto Sans Kannada', 'Inter', sans-serif; }
 .lang-ml { font-family: 'Noto Sans Malayalam', 'Inter', sans-serif; }
 .lang-en { font-family: 'Inter', sans-serif; }
+
+/* IDE Dark Theme Scrollbar - Always Visible */
+.ide-scrollbar {
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+}
+
+.ide-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.ide-scrollbar::-webkit-scrollbar-track {
+  background: #2D2D3A;
+  border-radius: 6px;
+}
+
+.ide-scrollbar::-webkit-scrollbar-thumb {
+  background: #6C5CE7;
+  border-radius: 6px;
+  border: 3px solid #2D2D3A;
+  min-height: 40px;
+}
+
+.ide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #5B4BD6;
+  border: 2px solid #2D2D3A;
+}
+
+.ide-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #4A3BC5;
+}
+
+/* Terminal Scrollbar - Always Visible */
+.terminal-scrollbar {
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+}
+
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-track {
+  background: #1E1E2E;
+  border-radius: 6px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: #6C5CE7;
+  border-radius: 6px;
+  border: 3px solid #1E1E2E;
+  min-height: 40px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #5B4BD6;
+  border: 2px solid #1E1E2E;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #4A3BC5;
+}
+
+/* Gurujii Panel Scrollbar - Always Visible */
+.gurujii-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: #6C5CE7 #2D2D3A;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+}
+
+.gurujii-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.gurujii-scrollbar::-webkit-scrollbar-track {
+  background: #2D2D3A;
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+.gurujii-scrollbar::-webkit-scrollbar-thumb {
+  background: #6C5CE7;
+  border-radius: 6px;
+  border: 3px solid #2D2D3A;
+  min-height: 40px;
+}
+
+.gurujii-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #5B4BD6;
+  border: 2px solid #2D2D3A;
+}
+
+.gurujii-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #4A3BC5;
+}
+
+/* Better word wrapping for long content */
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Gurujii message content styling */
+.gurujii-message-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Smooth scroll behavior */
+.gurujii-scrollbar {
+  scroll-behavior: smooth;
+}
+
+/* IDE Page Scrollbar - Always Visible */
+.ide-page-scrollbar {
+  overflow-y: scroll !important;
+}
+
+.ide-page-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.ide-page-scrollbar::-webkit-scrollbar-track {
+  background: #F6F7FB;
+  border-radius: 6px;
+}
+
+.ide-page-scrollbar::-webkit-scrollbar-thumb {
+  background: #6C5CE7;
+  border-radius: 6px;
+  border: 3px solid #F6F7FB;
+  min-height: 40px;
+}
+
+.ide-page-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #5B4BD6;
+  border: 2px solid #F6F7FB;
+}
+
+.ide-page-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #4A3BC5;
+}
+
+/* File Explorer Scrollbar - Always Visible */
+.file-explorer-scrollbar {
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+}
+
+.file-explorer-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  display: block;
+}
+
+.file-explorer-scrollbar::-webkit-scrollbar-track {
+  background: #F6F7FB;
+  border-radius: 5px;
+}
+
+.file-explorer-scrollbar::-webkit-scrollbar-thumb {
+  background: #9CA3AF;
+  border-radius: 5px;
+  border: 2px solid #F6F7FB;
+  min-height: 40px;
+}
+
+.file-explorer-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}
+
+.file-explorer-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #4B5563;
+}

@@ -272,58 +272,68 @@ export function AIAssistant() {
       </div>
       
       {/* Messages */}
-      <ScrollArea className="flex-1 p-3">
-        <div className="space-y-4">
-          {aiMessages.map((message) => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`flex ${
-                message.role === 'user' ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              <div
-                className={`max-w-[90%] rounded-lg p-3 ${
-                  message.role === 'user'
-                    ? 'bg-[#6C5CE7] text-white'
-                    : 'bg-[#2D2D3A] text-gray-300'
+      <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+        <div 
+          className="flex-1 overflow-y-auto overflow-x-hidden p-3 gurujii-scrollbar"
+          style={{ 
+            maxHeight: '100%',
+            overflowY: 'scroll',
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#6C5CE7 #2D2D3A'
+          }}
+        >
+          <div className="space-y-4 pr-2">
+            {aiMessages.map((message) => (
+              <motion.div
+                key={message.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`flex ${
+                  message.role === 'user' ? 'justify-end' : 'justify-start'
                 }`}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  {message.role === 'assistant' ? (
-                    <Bot className="w-4 h-4 text-[#6C5CE7]" />
-                  ) : (
-                    <div className="w-4 h-4 rounded-full bg-white/20" />
-                  )}
-                  <span className="text-xs font-medium">
-                    {message.role === 'assistant' ? 'Gurujii' : 'You'}
-                  </span>
-                  {message.role === 'assistant' && (
-                    <button
-                      onClick={() => copyToClipboard(message.content, message.id)}
-                      className="ml-auto text-gray-500 hover:text-white transition-colors"
-                    >
-                      {copiedId === message.id ? (
-                        <Check className="w-3 h-3" />
-                      ) : (
-                        <Copy className="w-3 h-3" />
-                      )}
-                    </button>
+                <div
+                  className={`max-w-[90%] rounded-lg p-3 ${
+                    message.role === 'user'
+                      ? 'bg-[#6C5CE7] text-white'
+                      : 'bg-[#2D2D3A] text-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    {message.role === 'assistant' ? (
+                      <Bot className="w-4 h-4 text-[#6C5CE7]" />
+                    ) : (
+                      <div className="w-4 h-4 rounded-full bg-white/20" />
+                    )}
+                    <span className="text-xs font-medium">
+                      {message.role === 'assistant' ? 'Gurujii' : 'You'}
+                    </span>
+                    {message.role === 'assistant' && (
+                      <button
+                        onClick={() => copyToClipboard(message.content, message.id)}
+                        className="ml-auto text-gray-500 hover:text-white transition-colors"
+                      >
+                        {copiedId === message.id ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  <div className="text-sm whitespace-pre-wrap break-words overflow-wrap-anywhere">
+                    {message.content}
+                  </div>
+                  {message.isStreaming && (
+                    <span className="inline-block w-2 h-4 bg-current animate-pulse ml-1" />
                   )}
                 </div>
-                <div className="text-sm whitespace-pre-wrap">
-                  {message.content}
-                </div>
-                {message.isStreaming && (
-                  <span className="inline-block w-2 h-4 bg-current animate-pulse ml-1" />
-                )}
-              </div>
-            </motion.div>
-          ))}
-          <div ref={messagesEndRef} />
+              </motion.div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
-      </ScrollArea>
+      </div>
       
       {/* Input */}
       <div className="p-3 border-t border-[#2D2D3A]">

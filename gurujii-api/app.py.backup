@@ -20,24 +20,6 @@ import soundfile as sf
 import os
 from datetime import datetime
 
-# Import teaching engine features
-try:
-    from teaching_engine import (
-        OFFLINE_ERROR_DB,
-        generate_hints,
-        detect_concepts,
-        explain_logic_step_by_step,
-        visualize_execution,
-        generate_practice_problems,
-        explain_thinking_process,
-        get_curriculum_content
-    )
-    TEACHING_ENGINE_AVAILABLE = True
-except ImportError:
-    TEACHING_ENGINE_AVAILABLE = False
-    print("Warning: Teaching engine not available")
-from datetime import datetime
-
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests
 
@@ -261,160 +243,338 @@ def generate_voice(text, language="hi"):
         print(f"Voice generation error: {e}")
         return None
 
+def analyze_code_structure(code):
+    """Analyze code structure and extract information"""
+    import ast
+    import re
+    
+    analysis = {
+        'functions': [],
+        'variables': [],
+        'loops': [],
+        'conditionals': [],
+        'imports': [],
+        'complexity': 'Simple'
+    }
+    
+    try:
+        tree = ast.parse(code)
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                analysis['functions'].append(node.name)
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        analysis['variables'].append(target.id)
+            elif isinstance(node, (ast.For, ast.While)):
+                analysis['loops'].append(type(node).__name__)
+            elif isinstance(node, ast.If):
+                analysis['conditionals'].append('if')
+            elif isinstance(node, (ast.Import, ast.ImportFrom)):
+                analysis['imports'].append('import')
+        
+        # Determine complexity
+        total_constructs = len(analysis['functions']) + len(analysis['loops']) + len(analysis['conditionals'])
+        if total_constructs > 5:
+            analysis['complexity'] = 'Complex'
+        elif total_constructs > 2:
+            analysis['complexity'] = 'Moderate'
+            
+    except:
+        pass
+    
+    return analysis
+
+def explain_code_detailed(code, user_language="en"):
+    """Provide detailed code explanation"""
+    
+    # Analyze code structure
+    analysis = analyze_code_structure(code)
+    
+    # Generate explanation using LLM
+    if generator:
+        prompt = f"""<|system|>
+You are Gurujii, an expert coding teacher. Explain this Python code in a clear, step-by-step manner.
+<|user|>
+Explain this code:
+
+{code}
+
+Provide:
+1. What the code does (overview)
+2. Step-by-step breakdown
+3. Key concepts used
+4. Time and space complexity (if applicable)
+<|assistant|>"""
+
+        try:
+            result = generator(prompt, max_new_tokens=300, do_sample=True, temperature=0.7)
+            explanation = result[0]["generated_text"]
+            
+            # Extract only the assistant's response
+            if "<|assistant|>" in explanation:
+                explanation = explanation.split("<|assistant|>")[-1].strip()
+            
+            # Add code analysis
+            explanation_parts = [f"📚 Code Explanation:\n\n{explanation}"]
+            
+            if analysis['functions']:
+                explanation_parts.append(f"\n\n🔧 Functions defined: {', '.join(analysis['functions'])}")
+            
+            if analysis['loops']:
+                explanation_parts.append(f"\n🔄 Contains {len(analysis['loops'])} loop(s)")
+            
+            if analysis['conditionals']:
+                explanation_parts.append(f"\n🔀 Contains {len(analysis['conditionals'])} conditional(s)")
+            
+            explanation_parts.append(f"\n\n📊 Complexity: {analysis['complexity']}")
+            
+            full_explanation = ''.join(explanation_parts)
+            
+            # Translate if needed
+            if user_language != "en":
+                full_explanation = translate_text(full_explanation, user_language)
+            
+            return {
+                "explanation": full_explanation,
+                "hasError": False,
+                "analysis": analysis,
+                "detectedLanguage": user_language
+            }
+            
+        except Exception as e:
+            print(f"LLM explanation error: {e}")
+    
+    # Fallback explanation
+    explanation = f"""📚 Code Analysis:
+
+This code contains:
+- {len(analysis['functions'])} function(s)
+- {len(analysis['variables'])} variable(s)
+- {len(analysis['loops'])} loop(s)
+- {len(analysis['conditionals'])} conditional(s)
+
+Complexity: {analysis['complexity']}
+
+The code appears to be working correctly. Run it to see the output!"""
+    
+    return {
+        "explanation": explanation,
+        "hasError": False,
+        "analysis": analysis,
+        "detectedLanguage": user_language
+    }
+
+def debug_code_detailed(code, user_language="en"):
+    """Debug code and provide detailed error analysis"""
+    
+    # Execute code to find errors
+    execution_result = execute_python_code(code)
+    
+    if execution_result['success']:
+        return {
+            "explanation": "✅ No errors found! Your code runs successfully.",
+            "hasError": False,
+            "suggestions": [
+                "Consider adding comments to explain complex logic",
+                "Use descriptive variable names",
+                "Add error handling for edge cases"
+            ],
+            "detectedLanguage": user_language
+        }
+    
+    # Code has errors - provide detailed debugging
+    error_type = execution_result['error_type']
+    error_message = execution_result['error_message']
+    
+    # Generate auto-fix suggestion
+    auto_fix = generate_auto_fix(code, error_type, error_message)
+    
+    # Get detailed explanation
+    if error_type in ERROR_DB:
+        base_message = ERROR_DB[error_type].get(user_language, ERROR_DB[error_type]["en"])
+    else:
+        base_message = "There's an error in your code."
+    
+    response = f"""🐛 Debug Analysis:
+
+❌ Error Type: {error_type}
+📍 Error: {error_message}
+
+💡 Explanation:
+{base_message}
+
+{auto_fix}
+
+🔍 Debugging Tips:
+1. Check the line mentioned in the error
+2. Look for missing colons, brackets, or quotes
+3. Verify variable names are spelled correctly
+4. Ensure proper indentation"""
+    
+    voice_url = generate_voice(base_message, user_language)
+    
+    return {
+        "explanation": response,
+        "hasError": True,
+        "errorType": error_type,
+        "errorMessage": error_message,
+        "autoFix": auto_fix,
+        "voiceUrl": voice_url,
+        "detectedLanguage": user_language
+    }
+
+def generate_auto_fix(code, error_type, error_message):
+    """Generate automatic code fix suggestions"""
+    
+    fixes = []
+    
+    if error_type == "SyntaxError":
+        if "expected ':'" in error_message or "invalid syntax" in error_message:
+            fixes.append("🔧 Suggested Fix: Add a colon (:) at the end of the line")
+            fixes.append("Example: if condition:")
+        elif "unexpected EOF" in error_message:
+            fixes.append("🔧 Suggested Fix: Check for unclosed brackets or quotes")
+    
+    elif error_type == "NameError":
+        if "is not defined" in error_message:
+            var_name = error_message.split("'")[1] if "'" in error_message else "variable"
+            fixes.append(f"🔧 Suggested Fix: Define '{var_name}' before using it")
+            fixes.append(f"Example: {var_name} = value")
+    
+    elif error_type == "IndentationError":
+        fixes.append("🔧 Suggested Fix: Use consistent indentation (4 spaces recommended)")
+        fixes.append("Tip: Make sure all code blocks are properly indented")
+    
+    elif error_type == "TypeError":
+        fixes.append("🔧 Suggested Fix: Check data types being used")
+        fixes.append("Tip: Use str(), int(), or float() to convert types")
+    
+    if fixes:
+        return "\n".join(fixes)
+    
+    return "🔧 Review the error message and check the syntax carefully"
+
+def get_code_hints(code, user_language="en"):
+    """Provide helpful hints for improving code"""
+    
+    hints = []
+    
+    # Analyze code for common issues
+    if "print" in code and "(" not in code:
+        hints.append("💡 Hint: Remember to use parentheses with print() in Python 3")
+    
+    if "for" in code and ":" not in code:
+        hints.append("💡 Hint: Don't forget the colon (:) after for loops")
+    
+    if "if" in code and ":" not in code:
+        hints.append("💡 Hint: Add a colon (:) after if statements")
+    
+    if "def" in code:
+        if "return" not in code:
+            hints.append("💡 Hint: Consider adding a return statement to your function")
+        if '"""' not in code and "'''" not in code:
+            hints.append("💡 Hint: Add a docstring to explain what your function does")
+    
+    # Check for variable naming
+    import re
+    variables = re.findall(r'\b([a-z])\s*=', code)
+    if len(variables) > 2:
+        hints.append("💡 Hint: Use descriptive variable names instead of single letters")
+    
+    # Check for comments
+    if "#" not in code and len(code.split('\n')) > 5:
+        hints.append("💡 Hint: Add comments to explain complex logic")
+    
+    if not hints:
+        hints = [
+            "💡 Your code looks good! Here are some general tips:",
+            "• Use meaningful variable names",
+            "• Add comments for complex logic",
+            "• Handle edge cases and errors",
+            "• Test your code with different inputs"
+        ]
+    
+    response = "🎯 Coding Hints:\n\n" + "\n".join(hints)
+    
+    if user_language != "en":
+        response = translate_text(response, user_language)
+    
+    return {
+        "explanation": response,
+        "hints": hints,
+        "detectedLanguage": user_language
+    }
+
+def improve_code_suggestions(code, user_language="en"):
+    """Provide code improvement suggestions"""
+    
+    suggestions = []
+    improved_code = code
+    
+    # Analyze and suggest improvements
+    analysis = analyze_code_structure(code)
+    
+    suggestions.append("✨ Code Improvement Suggestions:\n")
+    
+    # Check for best practices
+    if not code.strip().startswith('"""') and not code.strip().startswith("'''"):
+        suggestions.append("1. Add a module docstring at the top")
+    
+    if analysis['functions']:
+        suggestions.append("2. Ensure all functions have docstrings")
+        suggestions.append("3. Use type hints for function parameters")
+    
+    if len(code.split('\n')) > 20:
+        suggestions.append("4. Consider breaking code into smaller functions")
+    
+    if "print" in code:
+        suggestions.append("5. Consider using logging instead of print for production code")
+    
+    # Add complexity analysis
+    suggestions.append(f"\n📊 Current Complexity: {analysis['complexity']}")
+    
+    if analysis['complexity'] == 'Complex':
+        suggestions.append("💡 Tip: Simplify by breaking into smaller functions")
+    
+    # Best practices
+    suggestions.append("\n🌟 Best Practices:")
+    suggestions.append("• Use meaningful variable and function names")
+    suggestions.append("• Add error handling (try-except blocks)")
+    suggestions.append("• Write unit tests for your functions")
+    suggestions.append("• Follow PEP 8 style guidelines")
+    suggestions.append("• Add type hints for better code clarity")
+    
+    response = "\n".join(suggestions)
+    
+    if user_language != "en":
+        response = translate_text(response, user_language)
+    
+    return {
+        "explanation": response,
+        "suggestions": suggestions,
+        "complexity": analysis['complexity'],
+        "detectedLanguage": user_language
+    }
 def gurujii_explain(code, message, user_language):
-    """Main Gurujii engine - Enhanced with teaching features"""
+    """Main Gurujii engine - routes to appropriate function based on message"""
     
     message_lower = message.lower()
     
-    # Detect concepts in the code
-    if TEACHING_ENGINE_AVAILABLE:
-        concepts = detect_concepts(code, user_language)
-    else:
-        concepts = []
+    # Route to appropriate function based on message
+    if 'explain' in message_lower and 'detail' in message_lower:
+        return explain_code_detailed(code, user_language)
+    elif 'debug' in message_lower or 'error' in message_lower or 'fix' in message_lower:
+        return debug_code_detailed(code, user_language)
+    elif 'hint' in message_lower:
+        return get_code_hints(code, user_language)
+    elif 'improve' in message_lower or 'better' in message_lower or 'optimize' in message_lower:
+        return improve_code_suggestions(code, user_language)
+    elif 'explain' in message_lower:
+        return explain_code_detailed(code, user_language)
     
-    # Determine the action based on the message
-    is_explain_request = 'explain' in message_lower and 'detail' in message_lower
-    is_hint_request = 'hint' in message_lower
-    is_improve_request = 'improve' in message_lower or 'best practice' in message_lower
-    is_debug_request = 'debug' in message_lower or 'error' in message_lower or 'find' in message_lower
-    is_execute_request = 'execute' in message_lower or 'run' in message_lower
-    
-    # Handle EXPLAIN request - Don't execute, just analyze
-    if is_explain_request:
-        try:
-            import ast
-            tree = ast.parse(code)
-            
-            explanation = "📚 Code Explanation:\\n\\n"
-            
-            functions = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
-            if functions:
-                explanation += f"🔧 Functions defined: {', '.join(functions)}\\n"
-            
-            loops = len([node for node in ast.walk(tree) if isinstance(node, (ast.For, ast.While))])
-            if loops:
-                explanation += f"🔄 Contains {loops} loop(s)\\n"
-            
-            conditionals = len([node for node in ast.walk(tree) if isinstance(node, ast.If)])
-            if conditionals:
-                explanation += f"🔀 Contains {conditionals} conditional(s)\\n"
-            
-            # Count lines
-            lines = len([l for l in code.split('\\n') if l.strip()])
-            explanation += f"📝 Total lines: {lines}\\n"
-            
-            # Add concept detection
-            if concepts:
-                explanation += f"\\n🎯 Concepts detected:\\n"
-                for concept in concepts:
-                    explanation += f"   • {concept['concept']} ({concept['difficulty']})\\n"
-                    explanation += f"     {concept['explanation'][:100]}...\\n"
-            
-            # Add logic explanation if available
-            if TEACHING_ENGINE_AVAILABLE:
-                logic = explain_logic_step_by_step(code, user_language)
-                explanation += f"\\n{logic}"
-            
-            # Add visualization for recursion
-            if TEACHING_ENGINE_AVAILABLE:
-                viz = visualize_execution(code, user_language)
-                if viz:
-                    explanation += f"\\n\\n{viz}"
-            
-            explanation += "\\n\\n✨ To see the output, click the Run button in the terminal!"
-            
-            return {
-                "explanation": explanation,
-                "hasError": False,
-                "concepts": concepts,
-                "detectedLanguage": user_language
-            }
-        except Exception as e:
-            return {
-                "explanation": f"Unable to parse code: {str(e)}",
-                "hasError": False,
-                "detectedLanguage": user_language
-            }
-    
-    # Handle HINT request - Provide hints without executing
-    if is_hint_request:
-        hints_text = "💡 Code Improvement Hints:\\n\\n"
-        
-        # Check for common improvements
-        if "print" in code and "(" not in code:
-            hints_text += "• Use parentheses with print() in Python 3\\n"
-        
-        if "def" in code and "return" not in code:
-            hints_text += "• Consider adding a return statement to your function\\n"
-        
-        if "#" not in code and len(code.split('\\n')) > 5:
-            hints_text += "• Add comments to explain complex logic\\n"
-        
-        triple_quote = chr(34) * 3
-        single_triple = chr(39) * 3
-        if triple_quote not in code and single_triple not in code and "def" in code:
-            hints_text += "• Add docstrings to document your functions\\n"
-        
-        hints_text += "\\n🌟 General Best Practices:\\n"
-        hints_text += "• Use meaningful variable names\\n"
-        hints_text += "• Keep functions small and focused\\n"
-        hints_text += "• Handle edge cases and errors\\n"
-        hints_text += "• Write tests for your code\\n"
-        
-        return {
-            "explanation": hints_text,
-            "hasError": False,
-            "detectedLanguage": user_language
-        }
-    
-    # Handle IMPROVE request - Suggest improvements without executing
-    if is_improve_request:
-        improve_text = "✨ Code Improvement Suggestions:\\n\\n"
-        
-        try:
-            import ast
-            tree = ast.parse(code)
-            
-            functions = [node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
-            
-            improve_text += "📊 Current Analysis:\\n"
-            improve_text += f"• Functions: {len(functions)}\\n"
-            improve_text += f"• Lines of code: {len([l for l in code.split(chr(92)+'n') if l.strip()])}\\n\\n"
-            
-            improve_text += "🎯 Suggestions:\\n"
-            
-            triple_quote = chr(34) * 3
-            single_triple = chr(39) * 3
-            if not code.strip().startswith(triple_quote) and not code.strip().startswith(single_triple):
-                improve_text += "1. Add a module docstring at the top\\n"
-            
-            if functions:
-                improve_text += "2. Ensure all functions have docstrings\\n"
-                improve_text += "3. Use type hints for parameters and return values\\n"
-            
-            improve_text += "4. Follow PEP 8 style guidelines\\n"
-            improve_text += "5. Add error handling with try-except blocks\\n"
-            improve_text += "6. Write unit tests for your functions\\n"
-            
-            improve_text += "\\n💡 Best Practices:\\n"
-            improve_text += "• Use meaningful names (not x, y, z)\\n"
-            improve_text += "• Keep functions under 20 lines\\n"
-            improve_text += "• One function = one responsibility\\n"
-            improve_text += "• Avoid global variables\\n"
-            improve_text += "• Use constants for magic numbers\\n"
-            
-        except:
-            improve_text += "• Review your code structure\\n"
-            improve_text += "• Add comments and documentation\\n"
-            improve_text += "• Follow Python best practices\\n"
-        
-        return {
-            "explanation": improve_text,
-            "hasError": False,
-            "detectedLanguage": user_language
-        }
-    
-    # Handle DEBUG request or execution - Check for errors
+    # Default: Execute code and show results
     execution_result = execute_python_code(code)
     
     if execution_result['success']:
@@ -422,7 +582,7 @@ def gurujii_explain(code, message, user_language):
         output = execution_result['output'].strip()
         
         if output:
-            response = f"✓ Code executed successfully!\\n\\nOutput:\\n{output}"
+            response = f"✓ Code executed successfully!\n\nOutput:\n{output}"
         else:
             response = "✓ Code executed successfully! No output produced."
         
@@ -435,59 +595,17 @@ def gurujii_explain(code, message, user_language):
             "detectedLanguage": user_language
         }
     
-    # Code has errors - Use teaching engine for better explanations
+    # Code has errors
     error = execution_result['error']
     error_type = execution_result['error_type']
     error_message = execution_result['error_message']
     
-    # Use offline error database if available
-    if TEACHING_ENGINE_AVAILABLE and error_type in OFFLINE_ERROR_DB:
-        error_info = OFFLINE_ERROR_DB[error_type].get(user_language, OFFLINE_ERROR_DB[error_type]["en"])
-        
-        # Generate hints
-        hints = generate_hints(code, error_type, error_message, user_language)
-        
-        # Explain thinking process
-        thinking = explain_thinking_process(code, error_type, user_language)
-        
-        response = f"""🐛 Error Detected: {error_type}
-
-📍 {error_message}
-
-{thinking}
-
-💡 Understanding the Error:
-{error_info['explanation']}
-
-🎯 Three-Level Hints:
-{chr(10).join(hints)}
-
-🔧 How to Fix:
-{error_info['fix']}
-
-📚 Concept: {error_info['concept']}
-
-💭 Ask "Why?" to understand this error deeply!"""
-        
-        voice_url = generate_voice(error_info['explanation'], user_language)
-        
-        return {
-            "explanation": response,
-            "hasError": True,
-            "errorType": error_type,
-            "errorMessage": error_message,
-            "hints": hints,
-            "concept": error_info['concept'],
-            "voiceUrl": voice_url,
-            "detectedLanguage": user_language
-        }
-    
-    # Check if it's a known error type (fallback to original database)
+    # Check if it's a known error type
     if error_type in ERROR_DB:
         base_message = ERROR_DB[error_type].get(user_language, ERROR_DB[error_type]["en"])
         
         # Add specific error details
-        response = f"❌ {error_type}: {error_message}\\n\\n{base_message}"
+        response = f"❌ {error_type}: {error_message}\n\n{base_message}"
         
         voice_url = generate_voice(base_message, user_language)
         
@@ -518,7 +636,7 @@ Provide a clear, beginner-friendly explanation in 2-3 sentences."""
             if "Provide a clear" in llm_response:
                 llm_response = llm_response.split("Provide a clear")[0].strip()
             
-            response = f"❌ {error_type}: {error_message}\\n\\n{llm_response}"
+            response = f"❌ {error_type}: {error_message}\n\n{llm_response}"
             response_translated = translate_text(response, user_language)
             voice_url = generate_voice(response_translated, user_language)
             
@@ -534,7 +652,95 @@ Provide a clear, beginner-friendly explanation in 2-3 sentences."""
             print(f"LLM generation error: {e}")
     
     # Fallback response
-    response = f"❌ {error_type}: {error_message}\\n\\nThere's an error in your code. Please check the syntax and try again."
+    response = f"❌ {error_type}: {error_message}\n\nThere's an error in your code. Please check the syntax and try again."
+    
+    return {
+        "explanation": response,
+        "hasError": True,
+        "errorType": error_type,
+        "errorMessage": error_message,
+        "detectedLanguage": user_language
+    }
+    
+    # Execute code and get results
+    execution_result = execute_python_code(code)
+    
+    if execution_result['success']:
+        # Code executed successfully
+        output = execution_result['output'].strip()
+        
+        if output:
+            response = f"✓ Code executed successfully!\n\nOutput:\n{output}"
+        else:
+            response = "✓ Code executed successfully! No output produced."
+        
+        response_translated = translate_text(response, user_language)
+        
+        return {
+            "explanation": response_translated,
+            "hasError": False,
+            "output": output,
+            "detectedLanguage": user_language
+        }
+    
+    # Code has errors
+    error = execution_result['error']
+    error_type = execution_result['error_type']
+    error_message = execution_result['error_message']
+    
+    # Check if it's a known error type
+    if error_type in ERROR_DB:
+        base_message = ERROR_DB[error_type].get(user_language, ERROR_DB[error_type]["en"])
+        
+        # Add specific error details
+        response = f"❌ {error_type}: {error_message}\n\n{base_message}"
+        
+        voice_url = generate_voice(base_message, user_language)
+        
+        return {
+            "explanation": response,
+            "hasError": True,
+            "errorType": error_type,
+            "errorMessage": error_message,
+            "voiceUrl": voice_url,
+            "detectedLanguage": user_language
+        }
+    
+    # Use LLM for unknown errors
+    if generator:
+        prompt = f"""You are Gurujii, a friendly Indian coding teacher.
+Explain this Python error in simple terms:
+
+Error Type: {error_type}
+Error Message: {error_message}
+
+Provide a clear, beginner-friendly explanation in 2-3 sentences."""
+
+        try:
+            result = generator(prompt, max_new_tokens=150, do_sample=True, temperature=0.7)
+            llm_response = result[0]["generated_text"]
+            
+            # Extract only the explanation part
+            if "Provide a clear" in llm_response:
+                llm_response = llm_response.split("Provide a clear")[0].strip()
+            
+            response = f"❌ {error_type}: {error_message}\n\n{llm_response}"
+            response_translated = translate_text(response, user_language)
+            voice_url = generate_voice(response_translated, user_language)
+            
+            return {
+                "explanation": response_translated,
+                "hasError": True,
+                "errorType": error_type,
+                "errorMessage": error_message,
+                "voiceUrl": voice_url,
+                "detectedLanguage": user_language
+            }
+        except Exception as e:
+            print(f"LLM generation error: {e}")
+    
+    # Fallback response
+    response = f"❌ {error_type}: {error_message}\n\nThere's an error in your code. Please check the syntax and try again."
     
     return {
         "explanation": response,
@@ -658,196 +864,6 @@ Provide helpful suggestions."""
             "error": "Failed to generate suggestions",
             "details": str(e)
         }), 500
-
-# ============================================================================
-# ADVANCED TEACHING FEATURES
-# ============================================================================
-
-@app.route('/api/gurujii/hints', methods=['POST'])
-def get_hints():
-    """Get three-level hints instead of direct answers"""
-    try:
-        data = request.json
-        code = data.get('code', '')
-        error_type = data.get('errorType', '')
-        error_message = data.get('errorMessage', '')
-        language = data.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE:
-            return jsonify({"hints": ["Hint system not available"]})
-        
-        hints = generate_hints(code, error_type, error_message, language)
-        
-        return jsonify({
-            "hints": hints,
-            "message": "Try these hints before looking at the solution!"
-        })
-    
-    except Exception as e:
-        print(f"Hints error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/gurujii/detect-concepts', methods=['POST'])
-def detect_code_concepts():
-    """Automatically detect what concepts the student is learning"""
-    try:
-        data = request.json
-        code = data.get('code', '')
-        language = data.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE:
-            return jsonify({"concepts": []})
-        
-        concepts = detect_concepts(code, language)
-        
-        return jsonify({
-            "concepts": concepts,
-            "message": "Detected programming concepts in your code"
-        })
-    
-    except Exception as e:
-        print(f"Concept detection error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/gurujii/explain-logic', methods=['POST'])
-def explain_code_logic():
-    """Explain the logic and thinking process step by step"""
-    try:
-        data = request.json
-        code = data.get('code', '')
-        language = data.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE:
-            return jsonify({"explanation": "Logic explanation not available"})
-        
-        logic_explanation = explain_logic_step_by_step(code, language)
-        
-        return jsonify({
-            "explanation": logic_explanation,
-            "type": "logic"
-        })
-    
-    except Exception as e:
-        print(f"Logic explanation error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/gurujii/visualize', methods=['POST'])
-def visualize_code_execution():
-    """Create visual tree of code execution (especially recursion)"""
-    try:
-        data = request.json
-        code = data.get('code', '')
-        language = data.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE:
-            return jsonify({"visualization": None})
-        
-        visualization = visualize_execution(code, language)
-        
-        return jsonify({
-            "visualization": visualization,
-            "hasVisualization": visualization is not None
-        })
-    
-    except Exception as e:
-        print(f"Visualization error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/gurujii/practice', methods=['POST'])
-def get_practice_problems():
-    """Generate practice problems based on concept"""
-    try:
-        data = request.json
-        concept = data.get('concept', 'loops')
-        language = data.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE:
-            return jsonify({"problems": []})
-        
-        problems = generate_practice_problems(concept, language)
-        
-        return jsonify({
-            "problems": problems,
-            "concept": concept
-        })
-    
-    except Exception as e:
-        print(f"Practice generation error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/gurujii/explain-thinking', methods=['POST'])
-def explain_student_thinking():
-    """Explain the student's thinking process and guide to better logic"""
-    try:
-        data = request.json
-        code = data.get('code', '')
-        error_type = data.get('errorType', None)
-        language = data.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE:
-            return jsonify({"explanation": "Thinking analysis not available"})
-        
-        thinking_explanation = explain_thinking_process(code, error_type, language)
-        
-        return jsonify({
-            "explanation": thinking_explanation,
-            "type": "thinking"
-        })
-    
-    except Exception as e:
-        print(f"Thinking explanation error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/gurujii/curriculum', methods=['GET'])
-def get_curriculum():
-    """Get structured learning content aligned with school curriculum"""
-    try:
-        grade = int(request.args.get('grade', 9))
-        language = request.args.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE:
-            return jsonify({"topics": []})
-        
-        curriculum = get_curriculum_content(grade, language)
-        
-        return jsonify(curriculum)
-    
-    except Exception as e:
-        print(f"Curriculum error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/gurujii/why', methods=['POST'])
-def explain_why():
-    """Explain WHY an error happens (deep understanding)"""
-    try:
-        data = request.json
-        error_type = data.get('errorType', '')
-        language = data.get('language', 'en')
-        
-        if not TEACHING_ENGINE_AVAILABLE or error_type not in OFFLINE_ERROR_DB:
-            return jsonify({"explanation": "Explanation not available"})
-        
-        error_info = OFFLINE_ERROR_DB[error_type].get(language, OFFLINE_ERROR_DB[error_type]["en"])
-        
-        response = f"""🤔 Why does this error happen?
-
-{error_info['why']}
-
-📚 Concept: {error_info['concept']}
-
-💡 How to fix:
-{error_info['fix']}
-
-This understanding will help you avoid this error in the future!"""
-        
-        return jsonify({
-            "explanation": response,
-            "concept": error_info['concept']
-        })
-    
-    except Exception as e:
-        print(f"Why explanation error: {e}")
-        return jsonify({"error": str(e)}), 500
 
 # Serve static audio files
 @app.route('/audio/<path:filename>')
