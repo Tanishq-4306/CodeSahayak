@@ -39,3 +39,9 @@ package-lock.json
 # Temporary files
 *.tmp
 *.bak
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
